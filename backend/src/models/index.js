@@ -1,4 +1,4 @@
-const sequelize = require("../config/database");
+const { sequelize } = require("../config/database");
 
 const User = require("./User");
 const EsxiHost = require("./EsxiHost");
@@ -6,7 +6,7 @@ const Vm = require("./Vm");
 const Metric = require("./Metric");
 const ActionLog = require("./ActionLog");
 
-// связи
+// Связи
 EsxiHost.hasMany(Vm, { foreignKey: "esxiHostId" });
 Vm.belongsTo(EsxiHost, { foreignKey: "esxiHostId" });
 
@@ -15,6 +15,9 @@ Metric.belongsTo(Vm, { foreignKey: "vmId" });
 
 User.hasMany(ActionLog, { foreignKey: "userId" });
 ActionLog.belongsTo(User, { foreignKey: "userId" });
+
+// Если ActionLog связан с Vm
+ActionLog.belongsTo(Vm, { foreignKey: "vmId" });
 
 module.exports = {
   sequelize,
