@@ -1,20 +1,268 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мониторинг VM</title>
+    <title>Дашборд - VM Мониторинг</title>
+    <link rel="stylesheet" href="/frontend/css/dashdoard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>VM Monitor Admin</h1>
-        <nav>
-            <a href="dashboard.html">Главная</a>
-            <a href="table.html">Аудит</a>
-            <a href="users.html">Пользователи</a>
-            <span>Администратор: admin</span>
-            <a href="login.html">Выйти</a>
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>VM Monitor</h1>
+            <p>ESXi Мониторинг</p>
+        </div>
+        
+        <nav class="menu">
+            <a href="dashboard.html" class="menu-item active">
+                <span class="menu-icon">📊</span>
+                <span>Дашборд</span>
+            </a>
+            <a href="audit.html" class="menu-item">
+                <span class="menu-icon">📋</span>
+                <span>Аудит</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span>Пользователи</span>
+            </a>
         </nav>
-    </header>
+        
+        <a href="login.html" class="logout-btn">
+            <span class="menu-icon">🚪</span>
+            <span>Выйти</span>
+        </a>
+    </aside>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="header">
+            <h2>Дашборд мониторинга VM</h2>
+            <div class="status">🟢 Система активна</div>
+        </div>
+
+        <!-- Карточки статистики -->
+        <div class="card">
+            <h3 class="card-title">Общая статистика</h3>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Всего VM</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Активных VM</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">42%</div>
+                    <div class="stat-label">Средняя CPU</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">3.2 GB</div>
+                    <div class="stat-label">Используется RAM</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Графики -->
+        <div class="card">
+            <h3 class="card-title">Метрики производительности</h3>
+            
+            <!-- Селектор VM -->
+            <select class="vm-selector">
+                <option>Все VM</option>
+                <option>Web Server</option>
+                <option>Database</option>
+                <option>Backup Server</option>
+            </select>
+            
+            <!-- Сетка МАЛЕНЬКИХ графиков -->
+            <div class="charts-grid">
+                <!-- График CPU -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">VM CPU Использование</div>
+                        <div class="chart-time">Последний час</div>
+                    </div>
+                    <canvas id="cpuChart"></canvas>
+                </div>
+                
+                <!-- График RAM -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">VM RAM Использование</div>
+                        <div class="chart-time">Последний час</div>
+                    </div>
+                    <canvas id="ramChart"></canvas>
+                </div>
+                
+                <!-- График ROM -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">VM ROM Использование</div>
+                        <div class="chart-time">Последний час</div>
+                    </div>
+                    <canvas id="romChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Таблица VM -->
+        <div class="card">
+            <h3 class="card-title">Виртуальные машины</h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Имя VM</th>
+                            <th>Статус</th>
+                            <th>CPU</th>
+                            <th>RAM</th>
+                            <th>ROM</th>
+                            <th>ESXi Хост</th>
+                            <th>IP Адрес</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Web Server</strong></td>
+                            <td><span class="status-badge status-running">Запущена</span></td>
+                            <td>45%</td>
+                            <td>2.1 GB</td>
+                            <td>50 GB</td>
+                            <td>ESXi-01</td>
+                            <td>192.168.1.100</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td><span class="status-badge status-running">Запущена</span></td>
+                            <td>32%</td>
+                            <td>4.5 GB</td>
+                            <td>120 GB</td>
+                            <td>ESXi-01</td>
+                            <td>192.168.1.101</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backup Server</strong></td>
+                            <td><span class="status-badge status-stopped">Остановлена</span></td>
+                            <td>0%</td>
+                            <td>0 GB</td>
+                            <td>200 GB</td>
+                            <td>ESXi-02</td>
+                            <td>192.168.1.102</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Test VM</strong></td>
+                            <td><span class="status-badge status-running">Запущена</span></td>
+                            <td>12%</td>
+                            <td>1.5 GB</td>
+                            <td>40 GB</td>
+                            <td>ESXi-02</td>
+                            <td>192.168.1.103</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mail Server</strong></td>
+                            <td><span class="status-badge status-running">Запущена</span></td>
+                            <td>28%</td>
+                            <td>1.8 GB</td>
+                            <td>80 GB</td>
+                            <td>ESXi-01</td>
+                            <td>192.168.1.104</td>
+                        </tr>
+                        <tr>
+                            <td><strong>File Server</strong></td>
+                            <td><span class="status-badge status-running">Запущена</span></td>
+                            <td>15%</td>
+                            <td>3.2 GB</td>
+                            <td>500 GB</td>
+                            <td>ESXi-02</td>
+                            <td>192.168.1.105</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Скрипт для инициализации МАЛЕНЬКИХ графиков -->
+    <script>
+        // Функция для создания МАЛЕНЬКОГО графика
+        function createSmallChart(canvasId, title, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Меньше точек данных (всего 6 вместо 12)
+            const labels = [];
+            for (let i = 0; i < 6; i++) {
+                const minute = 7 + i * 4;
+                labels.push(`16:${minute.toString().padStart(2, '0')}`);
+            }
+            
+            // Данные
+            const data = [];
+            for (let i = 0; i < 6; i++) {
+                data.push(30 + Math.random() * 50);
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: title,
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color + '20',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 3, // Меньшие точки
+                        pointBorderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { 
+                                color: 'rgba(0,0,0,0.05)',
+                                drawBorder: false
+                            },
+                            ticks: { 
+                                callback: value => value + '%',
+                                font: { size: 10 }
+                            }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { size: 9 } }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 5,
+                            left: 5,
+                            right: 5
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Инициализация графиков при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            createSmallChart('cpuChart', 'CPU', '#3182ce');
+            createSmallChart('ramChart', 'RAM', '#48bb78');
+            createSmallChart('romChart', 'ROM', '#ed8936');
+        });
+    </script>
 </body>
 </html>
