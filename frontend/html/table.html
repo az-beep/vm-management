@@ -1,20 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Журнал событий</title>
+    <title>Аудит - VM Мониторинг</title>
+    <link rel="stylesheet" href="/frontend/css/table.css">
 </head>
 <body>
-    <header>
-        <h1>VM Monitor Admin</h1>
-        <nav>
-            <a href="dashboard.html">Главная</a>
-            <a href="table.html">Аудит</a>
-            <a href="users.html">Пользователи</a>
-            <span>Администратор: admin</span>
-            <a href="login.html">Выйти</a>
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>VM Monitor</h1>
+            <p>ESXi Мониторинг</p>
+        </div>
+        
+        <nav class="menu">
+            <a href="dashboard.html" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span>Дашборд</span>
+            </a>
+            <a href="table.html" class="menu-item active">
+                <span class="menu-icon">📋</span>
+                <span>Аудит</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span>Пользователи</span>
+            </a>
         </nav>
-    </header>
+        
+        <button href="login.html" class="logout-btn">
+            <span class="menu-icon">🚪</span>
+            <span>Выйти</span>
+        </button>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <h2>Журнал аудита</h2>
+            <button class="btn btn-primary">Обновить</button>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">События системы</h3>
+            
+            <!-- Фильтры -->
+            <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #4a5568;">С:</label>
+                    <input type="date" class="form-control" style="width: 150px;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #4a5568;">По:</label>
+                    <input type="date" class="form-control" style="width: 150px;">
+                </div>
+                <button class="btn btn-secondary" style="margin-top: 18px;">Применить</button>
+            </div>
+            
+            <!-- Таблица аудита -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Время</th>
+                            <th>Пользователь</th>
+                            <th>Действие</th>
+                            <th>VM</th>
+                            <th>Детали</th>
+                            <th>IP Адрес</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>2024-01-20 14:30:25</td>
+                            <td><strong>admin@example.com</strong></td>
+                            <td><span style="color: #3182ce;">Вход в систему</span></td>
+                            <td>-</td>
+                            <td>Успешная аутентификация</td>
+                            <td>192.168.1.100</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>2024-01-20 14:35:10</td>
+                            <td><strong>admin@example.com</strong></td>
+                            <td><span style="color: #48bb78;">Создана VM</span></td>
+                            <td>Web Server</td>
+                            <td>Создана новая виртуальная машина</td>
+                            <td>192.168.1.100</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>2024-01-20 14:40:15</td>
+                            <td><strong>admin@example.com</strong></td>
+                            <td><span style="color: #ed8936;">Изменена конфигурация</span></td>
+                            <td>Database</td>
+                            <td>Увеличена RAM до 4 GB</td>
+                            <td>192.168.1.100</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>2024-01-20 14:45:30</td>
+                            <td><strong>operator@example.com</strong></td>
+                            <td><span style="color: #3182ce;">Вход в систему</span></td>
+                            <td>-</td>
+                            <td>Успешная аутентификация</td>
+                            <td>192.168.1.101</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>2024-01-20 14:50:42</td>
+                            <td><strong>operator@example.com</strong></td>
+                            <td><span style="color: #f56565;">Остановлена VM</span></td>
+                            <td>Backup Server</td>
+                            <td>Виртуальная машина остановлена</td>
+                            <td>192.168.1.101</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Пагинация -->
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+                <button class="btn" style="background: #e2e8f0;">← Назад</button>
+                <span style="padding: 10px; color: #4a5568;">Страница 1 из 5</span>
+                <button class="btn btn-secondary">Вперёд →</button>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
