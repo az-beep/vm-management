@@ -3,23 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/frontend/css/login.css">
     <title>Вход в систему</title>
 </head>
-<body>
-    <h1>Вход в систему мониторинга VM</h1>
-    
-    <form>
-        <div>
-            <label>Логин:</label>
-            <input type="text" placeholder="Введите логин">
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>VM Мониторинг</h1>
+                <p>Система мониторинга ESXi хостов</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="login">Login:</label>
+                    <input 
+                        type="login" 
+                        id="login" 
+                        placeholder="Введите логин"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Пароль:</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Введите пароль"
+                        required
+                    >
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+
+                <button type="submit" class="login-btn">
+                    Войти в систему
+                </button>
+            </form>
         </div>
-        
-        <div>
-            <label>Пароль:</label>
-            <input type="password" placeholder="Введите пароль">
-        </div>
-        
-        <button type="submit">Войти</button>
-    </form>
+    </div>
+
+    <script src="routes/api.js" type="module"></script>
+    <script src="routes/auth.js" type="module"></script>
 </body>
 </html>
