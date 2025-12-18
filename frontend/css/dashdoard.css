@@ -1,4 +1,3 @@
-/* Общие стили для дашборда */
 * {
     margin: 0;
     padding: 0;
@@ -198,7 +197,7 @@ body {
     font-size: 13px;
 }
 
-/* МАЛЕНЬКИЕ ГРАФИКИ */
+/*ГРАФИКИ */
 .charts-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -213,7 +212,7 @@ body {
     box-shadow: 0 3px 8px rgba(0,0,0,0.05);
     border: 1px solid #e2e8f0;
     border-left: 3px solid #001A41;
-    height: 220px; /* ФИКСИРОВАННАЯ ВЫСОТА */
+    height: 220px; 
 }
 
 .chart-header {

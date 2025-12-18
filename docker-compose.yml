@@ -48,5 +48,21 @@ services:
         condition: service_healthy
     command: npm run dev
 
+   frontend:
+    build: ./frontend
+    container_name: frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "80:80"
+    environment:
+      NODE_ENV: development
+      API_URL: http://backend:3000
+    depends_on:
+      - backend
+    command: npx live-server --port=80 --host=0.0.0.0
+
 volumes:
   pgdata:
