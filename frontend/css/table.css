@@ -94,7 +94,7 @@ body {
 }
 
 .logout-btn:hover {
-    background: rgba(255,255,255,0.2);
+    background: #014ca8;
 }
 
 /* Основной контент */
@@ -131,21 +131,21 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(to right, #48bb78, #38a169);
+    background-color: #006beb;
     color: white;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(to right, #38a169, #2f855a);
+    background: #014ca8;
 }
 
 .btn-secondary {
-    background: #3182ce;
+    background: #006beb;
     color: white;
 }
 
 .btn-secondary:hover {
-    background: #2c5282;
+    background: #014ca8;
 }
 
 /* Карточки */
@@ -163,7 +163,7 @@ body {
     color: #2d3748;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #48bb78;
+    border-bottom: 2px solid #001A41;
 }
 
 /* Фильтры */

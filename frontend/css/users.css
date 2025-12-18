@@ -1,4 +1,3 @@
-/* Общие стили для страницы пользователей */
 * {
     margin: 0;
     padding: 0;
@@ -95,7 +94,7 @@ body {
 }
 
 .logout-btn:hover {
-    background: rgba(255,255,255,0.2);
+    background: #014ca8;
 }
 
 /* Основной контент */
@@ -132,12 +131,12 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(to right, #48bb78, #38a169);
+    background: #006beb;
     color: white;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(to right, #38a169, #2f855a);
+    background: #014ca8;
 }
 
 .btn-danger {
@@ -166,7 +165,7 @@ body {
     color: #2d3748;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #48bb78;
+    border-bottom: 2px solid #001A41;
 }
 
 /* Таблица пользователей */
@@ -213,21 +212,6 @@ body {
 .role-admin {
     background: #c6f6d5;
     color: #276749;
-}
-
-.role-operator {
-    background: #bee3f8;
-    color: #2c5282;
-}
-
-.role-auditor {
-    background: #feebc8;
-    color: #c05621;
-}
-
-.role-user {
-    background: #e2e8f0;
-    color: #4a5568;
 }
 
 /* Модальное окно */
