@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/frontend/css/login.css">
+    <link rel="stylesheet" href="css/login.css">
     <title>Вход в систему</title>
 </head>
 <body class="login-page">
@@ -16,11 +16,11 @@
 
             <form id="loginForm">
                 <div class="input-group">
-                    <label for="login">логин:</label>
+                    <label for="login">Email:</label>
                     <input 
                         type="login" 
                         id="login" 
-                        placeholder="Введите логин"
+                        placeholder="Введите адрес почты"
                         required
                     >
                 </div>
@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <script src="routes/api.js" type="module"></script>
-    <script src="routes/auth.js" type="module"></script>
+    <script src="../routes/api.js" type="module"></script>
+    <script src="../routes/auth.js" type="module"></script>
 </body>
 </html>

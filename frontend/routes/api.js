@@ -1,4 +1,8 @@
-const API_BASE_URL = 'http://localhost:5000';
+const isLocalhost = window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1';
+const API_BASE_URL = isLocalhost 
+  ? 'http://localhost:5000'  
+  : 'http://backend:5000';
 
 class ApiService {
     constructor() {
