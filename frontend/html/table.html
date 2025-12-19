@@ -1,20 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Журнал событий</title>
+    <title>Аудит - VM Мониторинг</title>
+    <link rel="stylesheet" href="/frontend/css/table.css">
 </head>
 <body>
-    <header>
-        <h1>VM Monitor Admin</h1>
-        <nav>
-            <a href="dashboard.html">Главная</a>
-            <a href="table.html">Аудит</a>
-            <a href="users.html">Пользователи</a>
-            <span>Администратор: admin</span>
-            <a href="login.html">Выйти</a>
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>VM Monitor</h1>
+            <p>ESXi Мониторинг</p>
+        </div>
+        <nav class="menu">
+            <a href="dashboard.html" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <span>Дашборд</span>
+            </a>
+            <a href="table.html" class="menu-item active">
+                <span class="menu-icon">📋</span>
+                <span>Аудит</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span>Пользователи</span>
+            </a>
         </nav>
-    </header>
+        <button class="logout-btn">
+            <span>Выйти</span>
+        </button>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <h2>Журнал аудита</h2>
+            <button class="btn btn-primary" id="refreshBtn">Обновить</button>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">События системы</h3>
+
+            <!-- Фильтры -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="dateFrom">С:</label>
+                    <input type="date" id="dateFrom" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <label for="dateTo">По:</label>
+                    <input type="date" id="dateTo" class="form-control">
+                </div>
+                <button class="btn btn-secondary" id="applyFilter">Применить</button>
+                <button class="btn" id="resetFilter">Сбросить</button>
+            </div>
+
+            <!-- Таблица аудита -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Время</th>
+                            <th>Пользователь</th>
+                            <th>Действие</th>
+                            <th>VM</th>
+                            <th>Детали</th>
+                            <th>IP Адрес</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTableBody">
+                        <!-- Данные загружаются динамически -->
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 30px; color: #718096;">
+                                Загрузка журнала аудита...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Пагинация -->
+            <div class="pagination">
+                <button class="pagination-btn" id="prevBtn">← Назад</button>
+                <span id="pageInfo">Страница 1 из 1</span>
+                <button class="pagination-btn" id="nextBtn">Вперёд →</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Скрипты -->
+    <script type="module" src="/frontend/routes/audit.js"></script>
 </body>
 </html>
