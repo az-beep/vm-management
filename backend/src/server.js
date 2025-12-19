@@ -2,11 +2,11 @@
 const app = require("./app");
 const sequelize = require("./config/database");
 
-const PORT = process.env.PORT || 5000;
+const PORT =  5000;
 
 const createDefaultUsers = async () => {
   const { User } = require("./models");
-  const bcrypt = require("bcryptjs");
+  const bcrypt = require("bcrypt");
   
   try {
     const users = [

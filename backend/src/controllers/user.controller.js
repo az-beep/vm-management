@@ -1,5 +1,5 @@
 // backend/src/controllers/user.controller.js
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const { User, ActionLog } = require("../models");
 
 exports.getAllUsers = async (req, res) => {

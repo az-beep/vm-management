@@ -1,18 +1,36 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    
     const user = await User.findOne({ where: { email } });
     
     if (!user) {
+      console.log("User not found");
       return res.status(401).json({ error: "Invalid credentials" });
     }
     
-    const validPassword = await bcrypt.compare(password, user.password);
+    console.log("User found, ID:", user.id);
+    console.log("Stored hash:", user.password.substring(0, 30) + "...");
+    
+    // Очищаем пароль от возможных пробелов
+    const cleanPassword = password.trim();
+    const cleanHash = user.password.trim();
+    
+    const validPassword = await bcrypt.compare(cleanPassword, cleanHash);
+    
+    console.log("Password comparison result:", validPassword);
+    
     if (!validPassword) {
+      console.log("Password mismatch");
+      
+      console.log("Input password:", cleanPassword);
+      console.log("Hash length:", cleanHash.length);
+      
       return res.status(401).json({ error: "Invalid credentials" });
     }
     
@@ -22,11 +40,22 @@ exports.login = async (req, res) => {
       { expiresIn: "24h" }
     );
     
-    res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
+    console.log("Login successful, token generated");
+    
+    res.json({ 
+      token, 
+      user: { 
+        id: user.id, 
+        email: user.email, 
+        role: user.role 
+      } 
+    });
+    
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 exports.verify = async (req, res) => {
   try {
@@ -35,7 +64,7 @@ exports.verify = async (req, res) => {
       return res.status(401).json({ error: "No token provided" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
+    const decoded = jwt.verify(token, "secret");
     const user = await User.findByPk(decoded.id);
     if (!user) {
       return res.status(401).json({ error: "User not found" });
