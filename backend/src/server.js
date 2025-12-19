@@ -33,3 +33,29 @@ const PORT = process.env.PORT || 5000;
     process.exit(1);
   }
 })();
+// server.js (добавляем после sequelize.sync())
+/*const createDefaultUsers = async () => {
+  const bcrypt = require("bcryptjs");
+  const { User } = require("./models");
+  
+  const users = [
+    { email: "admin@vm.local", password: "admin123", role: "admin" },
+    { email: "viewer@vm.local", password: "viewer123", role: "viewer" }
+  ];
+  
+  for (const userData of users) {
+    const existing = await User.findOne({ where: { email: userData.email } });
+    if (!existing) {
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      await User.create({
+        email: userData.email,
+        password: hashedPassword,
+        role: userData.role
+      });
+      console.log(`✅ User created: ${userData.email}`);
+    }
+  }
+};
+
+// Вызываем после sync
+await createDefaultUsers();*/
