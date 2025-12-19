@@ -1,11 +1,12 @@
 {
-  "name": "frontend",
+  "name": "vm-management",
   "version": "1.0.0",
-  "private": true,
+  "description": "Frontend для системы мониторинга VM",
   "scripts": {
-    "start": "npx serve -s ."
+    "start": "live-server --port=3000 --open=/frontend/login.html",
+    "dev": "live-server --port=3000 --open=/frontend/login.html"
   },
-  "dependencies": {
-    "serve": "^14.2.0"
+  "devDependencies": {
+    "live-server": "^1.2.2"
   }
 }
