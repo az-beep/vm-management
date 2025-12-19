@@ -76,19 +76,18 @@ function updateUsersTable() {
         // Не показываем кнопку удаления для текущего пользователя
         const canDelete = user.id !== currentUser.id;
         
-        row.innerHTML = `
-            <td>${user.id}</td>
-            <td><strong>${user.email}</strong></td>
-            <td><span class="role-badge ${roleClass}">${roleBadge}</span></td>
-            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
-            <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Никогда'}</td>
-            <td>
-                ${canDelete 
-                    ? `<button class="btn btn-danger" onclick="deleteUser(${user.id})">Удалить</button>`
-                    : '<span style="color: #718096; font-size: 14px;">Текущий пользователь</span>'
-                }
-            </td>
-        `;
+row.innerHTML = `
+<td>${user.id}</td>
+<td><strong>${user.email}</strong></td>
+<td><span class="role-badge ${roleClass}">${roleBadge}</span></td>
+<td>${new Date(user.createdAt).toLocaleDateString()}</td> <!-- Только дата создания -->
+<td>
+    ${canDelete 
+        ? `<button class="btn btn-danger" onclick="deleteUser(${user.id})">Удалить</button>`
+        : '<span style="color: #718096; font-size: 14px;">Текущий пользователь</span>'
+    }
+</td>
+`;
         
         tableBody.appendChild(row);
     });
