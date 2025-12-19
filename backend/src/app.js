@@ -20,7 +20,8 @@ app.get("/health", (req, res) => {
 app.use("/esxi", authMiddleware, require("./routes/esxi.routes"));
 app.use("/vm", authMiddleware, require("./routes/vm.routes"));
 app.use("/metrics", authMiddleware, require("./routes/metrics.routes"));
-app.use("/logs", authMiddleware, require("./routes/actionLog.routes")); // если создали
+app.use("/logs", authMiddleware, require("./routes/actionLog.routes"));
+app.use("/users", authMiddleware, require("./routes/user.routes")); 
 
 // Корневой маршрут (открытый)
 app.get("/", (req, res) => {
@@ -38,7 +39,10 @@ app.get("/", (req, res) => {
       "GET  /vm",
       "POST /vm",
       "GET  /metrics",
-      "GET  /logs"
+      "GET  /logs",
+      "GET  /users",
+      "POST /users", 
+      "DELETE /users/:id"
     ]
   });
 });
@@ -47,5 +51,7 @@ app.get("/", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
+
+app.use(cors());
 
 module.exports = app;
