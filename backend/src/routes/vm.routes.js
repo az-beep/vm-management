@@ -1,15 +1,14 @@
+s
 const router = require("express").Router();
+const controller = require("../controllers/vm.controller");
 
-router.get("/", (req, res) => {
-  res.json({ message: "VM list endpoint - under construction" });
-});
+router.post("/", controller.createVm);
+router.get("/", controller.getAllVms);
+router.get("/:id", controller.getVmById);
+router.put("/:id", controller.updateVm);
+router.delete("/:id", controller.deleteVm);
 
-router.get("/:id", (req, res) => {
-  res.json({ message: `VM details for ID ${req.params.id} - under construction` });
-});
-
-router.post("/", (req, res) => {
-  res.json({ message: "Create VM endpoint - under construction" });
-});
+router.post("/:id/start", controller.startVm);
+router.post("/:id/stop", controller.stopVm);
 
 module.exports = router;
