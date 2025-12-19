@@ -1,11 +1,9 @@
+
 const router = require("express").Router();
+const controller = require("../controllers/metrics.controller");
 
-router.get("/", (req, res) => {
-  res.json({ message: "Metrics endpoint - under construction" });
-});
-
-router.get("/:vmId", (req, res) => {
-  res.json({ message: `Metrics for VM ${req.params.vmId} - under construction` });
-});
+router.post("/", controller.addMetric);
+router.get("/vm/:vmId", controller.getMetricsByVm);
+router.get("/latest", controller.getLatestMetrics);
 
 module.exports = router;

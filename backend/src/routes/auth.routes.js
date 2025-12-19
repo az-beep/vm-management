@@ -1,15 +1,8 @@
+
 const router = require("express").Router();
+const controller = require("../controllers/auth.controller");
 
-router.post("/login", (req, res) => {
-  res.json({ message: "Login endpoint - under construction" });
-});
-
-router.post("/register", (req, res) => {
-  res.json({ message: "Register endpoint - under construction" });
-});
-
-router.post("/logout", (req, res) => {
-  res.json({ message: "Logout endpoint - under construction" });
-});
+router.post("/login", controller.login);
+router.get("/verify", controller.verify);
 
 module.exports = router;

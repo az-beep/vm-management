@@ -1,38 +1,45 @@
+// backend/src/app.js
+
 const express = require("express");
 const app = express();
+const { authMiddleware } = require("./middlewares/auth.middleware"); // добавь
 
 app.use(express.json());
 
-// Роуты
-app.use("/auth", (req, res) => res.json({ message: "Auth endpoint" }));
-app.use("/esxi", require("./routes/esxi.routes"));
-app.use("/vm", (req, res) => res.json({ message: "VM endpoint" }));
-app.use("/metrics", (req, res) => res.json({ message: "Metrics endpoint" }));
+// Открытые роуты (без авторизации)
+app.use("/auth", require("./routes/auth.routes"));
+app.get("/health", (req, res) => {
+  res.json({
+    status: "healthy",
+    service: "vm-management-backend",
+    timestamp: new Date().toISOString()
+  });
+});
 
-// Корневой маршрут
+// Закрытые роуты (требуют авторизации)
+app.use("/esxi", authMiddleware, require("./routes/esxi.routes"));
+app.use("/vm", authMiddleware, require("./routes/vm.routes"));
+app.use("/metrics", authMiddleware, require("./routes/metrics.routes"));
+app.use("/logs", authMiddleware, require("./routes/actionLog.routes")); // если создали
+
+// Корневой маршрут (открытый)
 app.get("/", (req, res) => {
-  res.json({ 
+  res.json({
     message: "✅ VM Management API",
     status: "running",
     version: "1.0.0",
     endpoints: [
       "GET  /",
       "GET  /health",
+      "POST /auth/login",
+      "GET  /auth/verify",
       "GET  /esxi",
       "POST /esxi/add",
-      "GET  /auth",
-      "GET  /vm", 
-      "GET  /metrics"
+      "GET  /vm",
+      "POST /vm",
+      "GET  /metrics",
+      "GET  /logs"
     ]
-  });
-});
-
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({ 
-    status: "healthy",
-    service: "vm-management-backend",
-    timestamp: new Date().toISOString()
   });
 });
 
