@@ -12,7 +12,6 @@
             <h1>VM Monitor</h1>
             <p>ESXi Мониторинг</p>
         </div>
-        
         <nav class="menu">
             <a href="dashboard.html" class="menu-item">
                 <span class="menu-icon">📊</span>
@@ -27,8 +26,7 @@
                 <span>Пользователи</span>
             </a>
         </nav>
-        
-        <button href="login.html" class="logout-btn">
+        <button class="logout-btn">
             <span>Выйти</span>
         </button>
     </aside>
@@ -36,14 +34,13 @@
     <main class="main-content">
         <div class="header">
             <h2>Управление пользователями</h2>
-            <button class="btn btn-primary" onclick="document.getElementById('addUserModal').style.display='block'">
+            <button class="btn btn-primary" id="addUserBtn">
                 + Добавить пользователя
             </button>
         </div>
 
         <div class="card">
             <h3 class="card-title">Список пользователей</h3>
-            
             <div class="table-container">
                 <table class="data-table">
                     <thead>
@@ -56,38 +53,12 @@
                             <th>Действия</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="usersTableBody">
+                        <!-- Данные загружаются динамически -->
                         <tr>
-                            <td>1</td>
-                            <td><strong>admin@example.com</strong></td>
-                            <td><span style="background: #c6f6d5; color: #276749; padding: 5px 10px; border-radius: 12px;">Администратор</span></td>
-                            <td>2024-01-01</td>
-                            <td>2024-01-20 14:30:25</td>
-                            <td><button class="btn" style="background: #fed7d7; color: #c53030;">Удалить</button></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td><strong>operator@example.com</strong></td>
-                            <td><span style="background: #c6f6d5; color: #276749; padding: 5px 10px; border-radius: 12px;">Администратор</span></td>
-                            <td>2024-01-15</td>
-                            <td>2024-01-20 14:45:30</td>
-                            <td><button class="btn" style="background: #fed7d7; color: #c53030;">Удалить</button></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td><strong>auditor@example.com</strong></td>
-                            <td><span style="background: #c6f6d5; color: #276749; padding: 5px 10px; border-radius: 12px;">Администратор</span></td>
-                            <td>2024-01-18</td>
-                            <td>2024-01-19 09:15:42</td>
-                            <td><button class="btn" style="background: #fed7d7; color: #c53030;">Удалить</button></td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td><strong>user@example.com</strong></td>
-                            <td><span style="background: #c6f6d5; color: #276749; padding: 5px 10px; border-radius: 12px;">Администратор</span></td>
-                            <td>2024-01-20</td>
-                            <td>2024-01-20 10:20:15</td>
-                            <td><button class="btn" style="background: #fed7d7; color: #c53030;">Удалить</button></td>
+                            <td colspan="6" style="text-align: center; padding: 30px; color: #718096;">
+                                Загрузка списка пользователей...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -96,46 +67,37 @@
     </main>
 
     <!-- Модальное окно добавления пользователя -->
-    <div id="addUserModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h3 style="color: #2d3748; font-size: 20px;">Добавить нового пользователя</h3>
-                <button onclick="document.getElementById('addUserModal').style.display='none'" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #718096;">×</button>
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить нового пользователя</h3>
+                <button class="modal-close">&times;</button>
             </div>
-            
-            <form>
+            <form id="addUserForm">
                 <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" class="form-control" placeholder="user@example.com">
+                    <input type="email" class="form-control" placeholder="user@example.com" required>
                 </div>
-                
                 <div class="form-group">
                     <label>Пароль:</label>
-                    <input type="password" class="form-control" placeholder="Введите пароль">
+                    <input type="password" class="form-control" placeholder="Введите пароль" required minlength="6">
                 </div>
-                
                 <div class="form-group">
                     <label>Роль:</label>
-                    <select class="form-control">
+                    <select class="form-control" required>
                         <option value="admin">Администратор</option>
+                        <option value="viewer">Наблюдатель</option>
                     </select>
                 </div>
-                
-                <div style="margin-top: 25px; display: flex; gap: 15px;">
-                    <button type="button" class="btn btn-primary">Создать</button>
-                    <button type="button" class="btn" style="background: #e2e8f0;" onclick="document.getElementById('addUserModal').style.display='none'">Отмена</button>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                    <button type="button" class="btn btn-secondary modal-close">Отмена</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script>
-        // Простой скрипт для модального окна
-        document.addEventListener('click', function(event) {
-            if (event.target.id === 'addUserModal') {
-                event.target.style.display = 'none';
-            }
-        });
-    </script>
+    <!-- Скрипты -->
+    <script type="module" src="/frontend/routes/users.js"></script>
 </body>
 </html>

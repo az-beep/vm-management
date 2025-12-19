@@ -12,7 +12,6 @@
             <h1>VM Monitor</h1>
             <p>ESXi Мониторинг</p>
         </div>
-        
         <nav class="menu">
             <a href="dashboard.html" class="menu-item">
                 <span class="menu-icon">📊</span>
@@ -27,8 +26,7 @@
                 <span>Пользователи</span>
             </a>
         </nav>
-        
-        <button href="login.html" class="logout-btn">
+        <button class="logout-btn">
             <span>Выйти</span>
         </button>
     </aside>
@@ -36,25 +34,26 @@
     <main class="main-content">
         <div class="header">
             <h2>Журнал аудита</h2>
-            <button class="btn btn-primary">Обновить</button>
+            <button class="btn btn-primary" id="refreshBtn">Обновить</button>
         </div>
 
         <div class="card">
             <h3 class="card-title">События системы</h3>
-            
+
             <!-- Фильтры -->
-            <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
-                <div>
-                    <label style="display: block; margin-bottom: 5px; color: #4a5568;">С:</label>
-                    <input type="date" class="form-control" style="width: 150px;">
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="dateFrom">С:</label>
+                    <input type="date" id="dateFrom" class="form-control">
                 </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; color: #4a5568;">По:</label>
-                    <input type="date" class="form-control" style="width: 150px;">
+                <div class="filter-group">
+                    <label for="dateTo">По:</label>
+                    <input type="date" id="dateTo" class="form-control">
                 </div>
-                <button class="btn btn-secondary" style="margin-top: 25px;">Применить</button>
+                <button class="btn btn-secondary" id="applyFilter">Применить</button>
+                <button class="btn" id="resetFilter">Сбросить</button>
             </div>
-            
+
             <!-- Таблица аудита -->
             <div class="table-container">
                 <table class="data-table">
@@ -69,63 +68,27 @@
                             <th>IP Адрес</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="auditTableBody">
+                        <!-- Данные загружаются динамически -->
                         <tr>
-                            <td>1</td>
-                            <td>2024-01-20 14:30:25</td>
-                            <td><strong>admin@example.com</strong></td>
-                            <td><span style="color: #3182ce;">Вход в систему</span></td>
-                            <td>-</td>
-                            <td>Успешная аутентификация</td>
-                            <td>192.168.1.100</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>2024-01-20 14:35:10</td>
-                            <td><strong>admin@example.com</strong></td>
-                            <td><span style="color: #48bb78;">Создана VM</span></td>
-                            <td>Web Server</td>
-                            <td>Создана новая виртуальная машина</td>
-                            <td>192.168.1.100</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>2024-01-20 14:40:15</td>
-                            <td><strong>admin@example.com</strong></td>
-                            <td><span style="color: #ed8936;">Изменена конфигурация</span></td>
-                            <td>Database</td>
-                            <td>Увеличена RAM до 4 GB</td>
-                            <td>192.168.1.100</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>2024-01-20 14:45:30</td>
-                            <td><strong>operator@example.com</strong></td>
-                            <td><span style="color: #3182ce;">Вход в систему</span></td>
-                            <td>-</td>
-                            <td>Успешная аутентификация</td>
-                            <td>192.168.1.101</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>2024-01-20 14:50:42</td>
-                            <td><strong>operator@example.com</strong></td>
-                            <td><span style="color: #f56565;">Остановлена VM</span></td>
-                            <td>Backup Server</td>
-                            <td>Виртуальная машина остановлена</td>
-                            <td>192.168.1.101</td>
+                            <td colspan="7" style="text-align: center; padding: 30px; color: #718096;">
+                                Загрузка журнала аудита...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            
+
             <!-- Пагинация -->
-            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
-                <button class="btn" style="background: #e2e8f0;">← Назад</button>
-                <span style="padding: 10px; color: #4a5568;">Страница 1 из 5</span>
-                <button class="btn btn-secondary">Вперёд →</button>
+            <div class="pagination">
+                <button class="pagination-btn" id="prevBtn">← Назад</button>
+                <span id="pageInfo">Страница 1 из 1</span>
+                <button class="pagination-btn" id="nextBtn">Вперёд →</button>
             </div>
         </div>
     </main>
+
+    <!-- Скрипты -->
+    <script type="module" src="/frontend/routes/audit.js"></script>
 </body>
 </html>

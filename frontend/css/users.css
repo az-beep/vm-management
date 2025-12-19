@@ -200,9 +200,9 @@ body {
     background: #f7fafc;
 }
 
-/* Бэйджи ролей */
+/* Стили для бэйджа ролей */
 .role-badge {
-    padding: 5px 12px;
+    padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 500;
@@ -214,6 +214,15 @@ body {
     color: #276749;
 }
 
+.role-viewer {
+    background: #bee3f8;
+    color: #2c5282;
+}
+
+.role-user {
+    background: #e2e8f0;
+    color: #4a5568;
+}
 /* Модальное окно */
 .modal {
     display: none;
