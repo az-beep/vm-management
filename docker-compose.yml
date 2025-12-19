@@ -18,6 +18,14 @@ services:
       timeout: 5s
       retries: 5
 
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
   backend:
     build: ./backend
     container_name: backend
@@ -26,7 +34,7 @@ services:
       - ./backend:/app
       - /app/node_modules
     ports:
-      - "3000:3000"
+      - "5000:5000"
     environment:
       NODE_ENV: development
       DB_HOST: postgres
