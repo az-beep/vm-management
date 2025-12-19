@@ -298,6 +298,50 @@ body {
     color: #c53030;
 }
 
+/* Кнопки действий в таблице */
+.actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-success {
+    background-color: #48bb78;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #38a169;
+}
+
+.btn-warning {
+    background-color: #ed8936;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #dd6b20;
+}
+
+/* Стили для селектора VM */
+#vmSelector {
+    margin-bottom: 15px;
+}
+
+/* Стили для состояния загрузки */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
 /* Адаптивность */
 @media (max-width: 1024px) {
     .charts-grid {
