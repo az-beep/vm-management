@@ -2,9 +2,11 @@
 
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const { authMiddleware } = require("./middlewares/auth.middleware"); // добавь
 
 app.use(express.json());
+app.use(cors());
 
 // Открытые роуты (без авторизации)
 app.use("/auth", require("./routes/auth.routes"));
@@ -52,6 +54,6 @@ app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-app.use(cors());
+
 
 module.exports = app;

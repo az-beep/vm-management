@@ -48,7 +48,7 @@ services:
         condition: service_healthy
     command: npm run dev
 
-   frontend:
+  frontend:
     build: ./frontend
     container_name: frontend
     working_dir: /app
@@ -56,13 +56,12 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - "80:80"
+      - "3000:3000"  # Live-server на 3000 порту
     environment:
       NODE_ENV: development
-      API_URL: http://backend:3000
     depends_on:
       - backend
-    command: npx live-server --port=80 --host=0.0.0.0
+    # Команда уже в Dockerfile
 
 volumes:
   pgdata:
