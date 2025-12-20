@@ -68,6 +68,13 @@ services:
         condition: service_healthy
     networks:
       - vm-network
+    command: >
+      sh -c "
+      echo 'Waiting 10 seconds for DNS...';
+      sleep 10;
+      echo 'Starting nginx...';
+      nginx -g 'daemon off;'
+      "
 
 networks:
   vm-network:
