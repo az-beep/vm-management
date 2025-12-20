@@ -1,7 +1,12 @@
-FROM node:18
+FROM nginx:alpine
 
-WORKDIR /app
-COPY . .
-RUN npm install -g serve
+# Копировать файлы фронтенда
+COPY . /usr/share/nginx/html
 
-CMD ["serve", "-s", ".", "-l", "3000"]
+# Копировать конфигурацию nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Копировать SSL сертификаты (они будут смонтированы из nginx-ssl/)
+RUN mkdir -p /etc/nginx/ssl
+
+EXPOSE 80 443

@@ -46,21 +46,31 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep node || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
     command: npm run dev
 
   frontend:
     build: ./frontend
-    container_name: frontend
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    container_name: vm-frontend
     ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: development
+      - "443:443"  # HTTPS
+      - "80:80"    # HTTP редирект
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx-ssl:/etc/nginx/ssl  # ← ВАЖНО! Монтируем сертификаты
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    command: >
+      sh -c "
+      echo 'Starting nginx...';
+      nginx -g 'daemon off;'
+      "
 
 volumes:
   pgdata:
