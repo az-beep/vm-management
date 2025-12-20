@@ -1,5 +1,3 @@
-// backend/src/app.js
-
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -8,7 +6,6 @@ const { authMiddleware } = require("./middlewares/auth.middleware"); // доба
 app.use(cors());
 app.use(express.json());
 
-// Открытые роуты (без авторизации)
 app.use("/auth", require("./routes/auth.routes"));
 app.get("/health", (req, res) => {
   res.json({
@@ -18,14 +15,12 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Закрытые роуты (требуют авторизации)
 app.use("/esxi", authMiddleware, require("./routes/esxi.routes"));
 app.use("/vm", authMiddleware, require("./routes/vm.routes"));
 app.use("/metrics", authMiddleware, require("./routes/metrics.routes"));
 app.use("/logs", authMiddleware, require("./routes/actionLog.routes"));
 app.use("/users", authMiddleware, require("./routes/user.routes")); 
 
-// Корневой маршрут (открытый)
 app.get("/", (req, res) => {
   res.json({
     message: "✅ VM Management API",
@@ -49,11 +44,9 @@ app.get("/", (req, res) => {
   });
 });
 
-// Обработка 404
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
-
 
 
 module.exports = app;

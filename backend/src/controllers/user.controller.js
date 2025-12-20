@@ -1,4 +1,3 @@
-// backend/src/controllers/user.controller.js
 const bcrypt = require("bcrypt");
 const { User, ActionLog } = require("../models");
 
@@ -18,7 +17,6 @@ exports.createUser = async (req, res) => {
     try {
         const { email, password, role = "admin" } = req.body;
         
-        // Проверяем, существует ли пользователь
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ error: "User already exists" });
@@ -32,7 +30,6 @@ exports.createUser = async (req, res) => {
             role
         });
 
-        // Логируем создание пользователя
         await ActionLog.create({
             userId: req.user.id,
             action: `Создание пользователя: ${email}`,

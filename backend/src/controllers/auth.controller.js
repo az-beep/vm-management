@@ -17,7 +17,6 @@ exports.login = async (req, res) => {
     console.log("User found, ID:", user.id);
     console.log("Stored hash:", user.password.substring(0, 30) + "...");
     
-    // Очищаем пароль от возможных пробелов
     const cleanPassword = password.trim();
     const cleanHash = user.password.trim();
     
