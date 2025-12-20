@@ -1,11 +1,11 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
+const { telegramNotifier } = require('./notification.controller'); // Добавьте эту строку
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    
     
     const user = await User.findOne({ where: { email } });
     
@@ -40,6 +40,19 @@ exports.login = async (req, res) => {
     );
     
     console.log("Login successful, token generated");
+    
+    // ДЛЯ TELEGRAM УВЕДОМЛЕНИЙ
+    if (telegramNotifier && telegramNotifier.enabled) {
+      telegramNotifier.sendMessage(
+        telegramNotifier.formatAlert('login', {
+          email: user.email,
+          role: user.role,
+          ip: req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+          userAgent: req.headers['user-agent']
+        }),
+        { silent: true } // Тихие уведомления для логинов
+      ).catch(err => console.error('Telegram notification error:', err));
+    }
     
     res.json({ 
       token, 

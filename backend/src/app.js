@@ -24,6 +24,7 @@ app.use("/vm", authMiddleware, require("./routes/vm.routes"));
 app.use("/metrics", authMiddleware, require("./routes/metrics.routes"));
 app.use("/logs", authMiddleware, require("./routes/action.routes"));
 app.use("/users", authMiddleware, require("./routes/user.routes")); 
+app.use("/notifications", authMiddleware, require("./routes/notification.routes"));
 
 app.get("/", (req, res) => {
   res.json({
@@ -43,7 +44,9 @@ app.get("/", (req, res) => {
       "GET  /logs",
       "GET  /users",
       "POST /users", 
-      "DELETE /users/:id"
+      "DELETE /users/:id",
+      "POST /notifications/send",
+      "GET  /notifications/status"
     ]
   });
 });
