@@ -1,12 +1,7 @@
-FROM node:18-alpine
-
-# Устанавливаем live-server глобально
-RUN npm install -g live-server
+FROM node:18
 
 WORKDIR /app
 COPY . .
+RUN npm install -g serve
 
-EXPOSE 3000
-
-# Запускаем live-server с правильным путем
-CMD ["live-server", "--port=3000", "--host=0.0.0.0", "--open=/html/login.html"]
+CMD ["serve", "-s", ".", "-l", "3000"]

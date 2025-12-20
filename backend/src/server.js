@@ -1,8 +1,7 @@
-// backend/src/server.js
 const app = require("./app");
 const sequelize = require("./config/database");
 
-const PORT =  5000;
+const PORT = 5000;
 
 const createDefaultUsers = async () => {
   const { User } = require("./models");
@@ -23,41 +22,32 @@ const createDefaultUsers = async () => {
           password: hashedPassword,
           role: userData.role
         });
-        console.log(`✅ User created: ${userData.email}`);
+        console.log(`User created: ${userData.email}`);
       }
     }
   } catch (error) {
-    console.error("❌ Error creating users:", error.message);
+    console.error("Error creating users:", error.message);
   }
 };
 
-// Основная асинхронная функция
 const startServer = async () => {
   try {
-    console.log("🔗 Connecting to database...");
     await sequelize.authenticate();
-    console.log("✅ Database connected successfully");
-
-    console.log("🔄 Syncing database tables...");
     await sequelize.sync({ alter: true });
-    console.log("✅ Database tables synced");
-
-    console.log("👤 Creating default users...");
     await createDefaultUsers();
 
     app.listen(PORT, () => {
       console.log("=".repeat(50));
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📡 API: http://localhost:${PORT}`);
-      console.log(`🗄️  Adminer: http://localhost:8080`);
+      console.log(`Server running on port ${PORT}`);
+      console.log(`API: http://localhost:${PORT}`);
+      console.log(`Adminer: http://localhost:8080`);
       console.log("=".repeat(50));
     });
 
   } catch (err) {
-    console.error("❌ Startup error:", err.message);
+    console.error("Startup error:", err.message);
     process.exit(1);
   }
 };
 
-// Запускаем сервер
 startServer();

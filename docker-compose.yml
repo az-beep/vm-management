@@ -56,12 +56,11 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - "3000:3000"  # Live-server на 3000 порту
+      - "3000:3000"
     environment:
       NODE_ENV: development
     depends_on:
       - backend
-    # Команда уже в Dockerfile
 
 volumes:
   pgdata:

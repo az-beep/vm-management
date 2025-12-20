@@ -32,7 +32,7 @@ class ApiService {
             if (response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = '/frontend/login.html';
+                window.location.href = '../index.html';
                 throw new Error('Unauthorized');
             }
 

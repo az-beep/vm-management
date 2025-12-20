@@ -8,7 +8,7 @@ let allLogs = [];
 document.addEventListener('DOMContentLoaded', async () => {
     // Проверка авторизации
     if (!localStorage.getItem('token')) {
-        window.location.href = '/frontend/login.html';
+        window.location.href = '../index.html';
         return;
     }
 

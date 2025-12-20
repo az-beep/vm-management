@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Проверка авторизации
     const user = getCurrentUser();
     if (!user) {
-        window.location.href = '/frontend/login.html';
+        window.location.href = '../index.html';
         return;
     }
 
