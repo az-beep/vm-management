@@ -17,8 +17,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - vm-network
 
   adminer:
     image: adminer
@@ -27,8 +25,6 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
-    networks:
-      - vm-network
 
   backend:
     build: ./backend
@@ -56,8 +52,6 @@ services:
       timeout: 3s
       retries: 10
       start_period: 10s
-    networks:
-      - vm-network
     command: npm run dev
 
   frontend:
@@ -72,8 +66,6 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-    networks:
-      - vm-network
     command: >
       sh -c "
       echo 'Waiting for backend DNS resolution...';
@@ -96,10 +88,6 @@ services:
       echo 'Starting nginx...';
       nginx -g 'daemon off;'
       "
-
-networks:
-  vm-network:
-    driver: bridge
 
 volumes:
   pgdata:
