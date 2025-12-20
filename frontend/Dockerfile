@@ -1,13 +1,12 @@
-# frontend/Dockerfile
-FROM node:18-alpine
+FROM nginx:alpine
 
-# Устанавливаем live-server глобально
-RUN npm install -g live-server
+# Копировать файлы фронтенда
+COPY . /usr/share/nginx/html
 
-WORKDIR /app
-COPY . .
+# Копировать конфигурацию nginx
+COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 3000
+# Копировать SSL сертификаты (они будут смонтированы из nginx-ssl/)
+RUN mkdir -p /etc/nginx/ssl
 
-# Запускаем live-server с правильным путем
-CMD ["live-server", "--port=3000", "--host=0.0.0.0", "--open=/html/login.html"]
+EXPOSE 80 443
