@@ -52,6 +52,8 @@ services:
       timeout: 3s
       retries: 10
       start_period: 10s
+    networks:
+      - vm-network
     command: npm run dev
 
   frontend:
