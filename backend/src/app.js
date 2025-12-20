@@ -18,7 +18,7 @@ app.get("/health", (req, res) => {
 app.use("/esxi", authMiddleware, require("./routes/esxi.routes"));
 app.use("/vm", authMiddleware, require("./routes/vm.routes"));
 app.use("/metrics", authMiddleware, require("./routes/metrics.routes"));
-app.use("/logs", authMiddleware, require("./routes/actionLog.routes"));
+app.use("/logs", authMiddleware, require("./routes/action.routes"));
 app.use("/users", authMiddleware, require("./routes/user.routes")); 
 
 app.get("/", (req, res) => {

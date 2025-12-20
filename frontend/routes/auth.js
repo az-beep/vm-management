@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('user', JSON.stringify(response.user));
                     
                     // Перенаправляем на дашборд
-                    window.location.href = '/frontend/dashboard.html';
+                    window.location.href = '../html/dashboard.html';
                 }
             } catch (error) {
                 errorMessage.textContent = 'Неверный логин или пароль';
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (protectedPages.includes(currentPage)) {
         const token = localStorage.getItem('token');
         if (!token) {
-            window.location.href = '/frontend/login.html';
+            window.location.href = '../index.html';
         }
     }
 });
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 export function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/frontend/login.html';
+    window.location.href = '../index.html';
 }
 
 // Функция получения текущего пользователя
