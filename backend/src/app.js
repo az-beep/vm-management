@@ -3,9 +3,13 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { authMiddleware } = require("./middlewares/auth.middleware"); // добавь
+const { authMiddleware } = require("./middlewares/auth.middleware"); 
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://localhost:443', 'https://localhost', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 app.use(express.json());
 
 // Открытые роуты (без авторизации)
