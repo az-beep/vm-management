@@ -50,18 +50,21 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: frontend
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    container_name: vm-frontend
     ports:
-      - "3000:3000"  # Live-server на 3000 порту
-    environment:
-      NODE_ENV: development
+      - "443:443"  # HTTPS
+      - "80:80"    # HTTP редирект
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx-ssl:/etc/nginx/ssl  # ← ВАЖНО! Монтируем сертификаты
     depends_on:
       - backend
-    # Команда уже в Dockerfile
+    networks:
+      - vm-network
+
+networks:
+  vm-network:
+    driver: bridge
 
 volumes:
   pgdata:
