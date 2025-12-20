@@ -68,23 +68,6 @@ services:
         condition: service_healthy
     command: >
       sh -c "
-      echo 'Waiting for backend DNS resolution...';
-
-      while ! nslookup backend > /dev/null 2>&1; do
-      echo 'Backend not found in DNS, waiting...';
-      sleep 2;
-      done;
-    
-      echo 'Backend found in DNS:';
-      nslookup backend;
-    
-      echo 'Testing connection to backend...';
-      if nc -z backend 5000 2>/dev/null; then
-      echo 'Backend is reachable on port 5000';
-      else
-      echo 'WARNING: Backend not reachable on port 5000';
-      fi;
-    
       echo 'Starting nginx...';
       nginx -g 'daemon off;'
       "
