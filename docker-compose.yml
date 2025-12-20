@@ -46,6 +46,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep node || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
     command: npm run dev
 
   frontend:
@@ -58,7 +64,8 @@ services:
       - ./frontend:/usr/share/nginx/html
       - ./nginx-ssl:/etc/nginx/ssl  # ← ВАЖНО! Монтируем сертификаты
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - vm-network
 
