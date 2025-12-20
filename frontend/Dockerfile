@@ -1,3 +1,4 @@
+# frontend/Dockerfile
 FROM node:18-alpine
 
 # Устанавливаем live-server глобально
