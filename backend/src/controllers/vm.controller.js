@@ -1,22 +1,5 @@
-const { Vm, EsxiHost, Metric, ActionLog } = require("../models");
+const { Vm, EsxiHost, Metric, ActionLog, User } = require("../models");
 const { telegramNotifier } = require('./notification.controller');
-
-exports.createVm = async (req, res) => {
-  try {
-    const { name, cpu, ram, rom, esxiHostId } = req.body;
-    const vm = await Vm.create({
-      name,
-      cpu,
-      ram,
-      rom,
-      esxiHostId,
-      status: "stopped",
-    });
-    res.status(201).json(vm);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 exports.getAllVms = async (req, res) => {
   try {
@@ -31,9 +14,60 @@ exports.getVmById = async (req, res) => {
   try {
     const vm = await Vm.findByPk(req.params.id, { include: [EsxiHost, Metric] });
     if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
+      return res.status(404).json({ error: "ВМ не найдена" });
     }
     res.json(vm);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createVm = async (req, res) => {
+  try {
+    const { name, cpu, ram, rom, esxiHostId } = req.body;
+
+    // проверка существования вм с таким именем
+    const existingVm = await Vm.findOne({ where: { name } });
+    if (existingVm) {
+      return res.status(400).json({ error: "VM с таким именем уже существует" });
+    }
+    
+    // проверка существования хоста
+    const esxiHost = await EsxiHost.findByPk(esxiHostId);
+    if (!esxiHost) {
+      return res.status(404).json({ error: "ESXi хост не найден" });
+    }
+    const vm = await Vm.create({
+      name,
+      cpu,
+      ram,
+      rom,
+      esxiHostId,
+      status: "stopped",
+    });
+
+    // Логирование создания VM
+    /*await ActionLog.create({
+      userId: req.user.id,
+      vmId: vm.id,
+      action: "Создание VM",
+      details: `Имя: ${name}, CPU: ${cpu}%, RAM: ${ram} MB, ROM: ${rom} GB, ESXi: ${esxiHost.name}`
+    });*/
+
+    // тг увед
+    if (telegramNotifier.enabled) {
+      telegramNotifier.sendMessage(
+        telegramNotifier.formatAlert('vm_created', {
+          vmName: vm.name,
+          cpu: cpu,
+          ram: ram,
+          rom: rom,
+          userEmail: req.user.email
+        })
+      ).catch(err => {});
+    }
+
+    res.status(201).json(vm);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -43,10 +77,28 @@ exports.updateVm = async (req, res) => {
   try {
     const vm = await Vm.findByPk(req.params.id);
     if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
+      return res.status(404).json({ error: "ВМ не найдена" });
     }
     const { name, cpu, ram, rom, status, esxiHostId } = req.body;
     await vm.update({ name, cpu, ram, rom, status, esxiHostId });
+
+    // тг увед
+    if (telegramNotifier.enabled) {
+      telegramNotifier.sendMessage(
+        telegramNotifier.formatAlert('vm_updated', {
+          vmName: name,
+          status: status,
+          userEmail: req.user.email
+        })
+      ).catch(err => {});
+    }
+
+    /*await ActionLog.create({
+      userId: req.user.id,
+      vmId: vm.id,
+      action: "Обновление VM",
+    });*/
+    
     res.json(vm);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -57,10 +109,27 @@ exports.deleteVm = async (req, res) => {
   try {
     const vm = await Vm.findByPk(req.params.id);
     if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
+      return res.status(404).json({ error: "ВМ не найдена" });
     }
     await vm.destroy();
-    res.json({ message: "VM deleted successfully" });
+
+    // тг увед
+    if (telegramNotifier.enabled) {
+      telegramNotifier.sendMessage(
+        telegramNotifier.formatAlert('vm_deleted', {
+          vmName: vm.name,
+          userEmail: req.user.email
+        })
+      ).catch(err => {});
+    }
+
+    /*await ActionLog.create({
+      userId: req.user.id,
+      action: "Удаление VM",
+      details: `Имя: ${vmInfo.name}, CPU: ${vmInfo.cpu}%, RAM: ${vmInfo.ram} MB, ROM: ${vmInfo.rom} GB, Статус: ${vmInfo.status}`
+    });*/
+
+    res.json({ message: "ВМ успешно удалена" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -71,707 +140,65 @@ exports.startVm = async (req, res) => {
   try {
     const vm = await Vm.findByPk(req.params.id, { include: [User] });
     if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
+      return res.status(404).json({ error: "ВМ не найдена" });
     }
 
     const oldStatus = vm.status;
     await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
+
+    // тг увед
     if (telegramNotifier.enabled) {
       telegramNotifier.sendMessage(
         telegramNotifier.formatAlert('vm_status', {
           vmName: vm.name,
           oldStatus: oldStatus,
           newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
+          userEmail: req.user.email
         })
-      ).catch(err => console.error('Notification error:', err));
+      ).catch(err => console.error('Ошибка уведомления:', err));
     }
 
-    res.json({ message: "VM started", vm });
+    /*await ActionLog.create({
+      userId: req.user.id,
+      vmId: vm.id,
+      action: "Запуск VM",
+      details: `ВМ: ${vm.name}, Статус: ${oldStatus} → running`
+    });*/
+
+    res.json({ message: "ВМ запущена", vm });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.startVm = async (req, res) => {
-  try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
-    if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
-    }
-
-    const oldStatus = vm.status;
-    await vm.update({ status: "running" });
-    
-    // Отправляем уведомление
-    if (telegramNotifier.enabled) {
-      telegramNotifier.sendMessage(
-        telegramNotifier.formatAlert('vm_status', {
-          vmName: vm.name,
-          oldStatus: oldStatus,
-          newStatus: 'running',
-          userEmail: req.user.email,
-          template: 'vm_status'
-        })
-      ).catch(err => console.error('Notification error:', err));
-    }
-
-    res.json({ message: "VM started", vm });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 
 exports.stopVm = async (req, res) => {
   try {
     const vm = await Vm.findByPk(req.params.id);
     if (!vm) {
-      return res.status(404).json({ error: "VM not found" });
+      return res.status(404).json({ error: "ВМ не найдена" });
     }
+    const oldStatus = vm.status;
     await vm.update({ status: "stopped" });
-    res.json({ message: "VM stopped", vm });
+
+    /*await ActionLog.create({
+      userId: req.user.id,
+      vmId: vm.id,
+      action: "Остановка VM",
+      details: `ВМ: ${vm.name}, Статус: ${oldStatus} → stopped`
+    });*/
+
+    if (telegramNotifier.enabled) {
+      telegramNotifier.sendMessage(
+        telegramNotifier.formatAlert('vm_status', {
+          vmName: vm.name,
+          oldStatus: oldStatus,
+          newStatus: 'stopped',
+          userEmail: req.user.email
+        })
+      ).catch(err => console.error('Ошибка уведомления:', err));
+    }
+
+    res.json({ message: "ВМ остановлена", vm });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

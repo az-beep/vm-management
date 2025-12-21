@@ -1,8 +1,7 @@
-
 const router = require("express").Router();
 const controller = require("../controllers/metrics.controller");
 
-router.post("/", controller.addMetric);
+//router.post("/", controller.addMetric);
 router.get("/vm/:vmId", controller.getMetricsByVm);
 router.get("/latest", controller.getLatestMetrics);
 

@@ -1,6 +1,6 @@
 const { Sequelize } = require("sequelize");
 
-console.log(' Database configuration:');
+console.log('Конфигурация БД:');
 console.log('  DB_HOST:',  'postgres');
 console.log('  DB_NAME:',  'vm_db');
 console.log('  DB_USER:',  'admin');
