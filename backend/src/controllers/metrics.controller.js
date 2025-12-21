@@ -6,6 +6,25 @@ exports.getMetricsByVm = async (req, res) => {
       where: { vmId: req.params.vmId },
       order: [["timestamp", "DESC"]],
     });
+
+    const latestMetric = metrics[0];
+    
+    if (latestMetric) {
+      const cpuThreshold = 80;
+      
+      if (latestMetric.cpu > cpuThreshold) {
+        if (telegramNotifier.enabled) {
+          telegramNotifier.sendMessage(
+            telegramNotifier.formatAlert('cpu_alert', {
+              vmName: latestMetric.Vm.name,
+              cpuUsage: latestMetric.cpu,
+              threshold: cpuThreshold
+            })
+          ).catch(err => {});
+        }
+      }
+    }
+
     res.json(metrics);
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -5,17 +5,10 @@ class TelegramNotifier {
     this.botToken = '8359101654:AAG95K8Mbi_BmCAn4R5WOe37KijuUXSJMi4';
     this.chatId = '977325615';
     this.enabled = !!this.botToken && !!this.chatId;
-    
-    if (this.enabled) {
-      console.log('Уведомления Telegram включены');
-    } else {
-      console.log('Уведомления Telegram отключены');
-    }
   }
 
   async sendMessage(message, options = {}) {
     if (!this.enabled) {
-      console.log('Уведомление Telegram (отключено):', message);
       return { success: false, error: 'Telegram не настроен' };
     }
 
@@ -31,16 +24,12 @@ class TelegramNotifier {
       };
 
       const response = await axios.post(url, payload);
-      
-      console.log('Уведомление Telegram отправлено:', message.substring(0, 50) + '...');
       return { success: true, data: response.data };
       
     } catch (error) {
-      console.error('Ошибка отправки Telegram:', error.message);
       return { 
         success: false, 
-        error: error.message,
-        details: error.response?.data 
+        error: error.message
       };
     }
   }
@@ -61,24 +50,59 @@ class TelegramNotifier {
              `Роль: ${data.role}\n` +
              `IP: ${data.ip || 'Н/Д'}\n` +
              `Время: ${new Date().toLocaleString()}`,
-      
       vm_status: `${icons.info} <b>Статус ВМ изменен</b>\n` +
-                 `ВМ: <code>${data.vmName}</code>\n` +
-                 `Статус: ${data.oldStatus} → ${data.newStatus}\n` +
-                 `Пользователь: ${data.userEmail}\n` +
-                 `Время: ${new Date().toLocaleString()}`,
+                  `ВМ: <code>${data.vmName}</code>\n` +
+                  `Статус: ${data.oldStatus} → ${data.newStatus}\n` +
+                  `Пользователь: ${data.userEmail}\n` +
+                  `Время: ${new Date().toLocaleString()}`,
+
+      user_created: `${icons.success} <b>Создан новый пользователь</b>\n` +
+                  `Пользователь: ${data.email}\n` +
+                  `Роль: ${data.role}\n` +
+                  `Создал: ${data.createdBy}\n` +
+                  `Время: ${new Date().toLocaleString()}`,
+      
+      user_deleted: `${icons.critical} <b>Удален пользователь</b>\n` +
+                  `Пользователь: ${data.email}\n` +
+                  `Роль: ${data.role}\n` +
+                  `Удалил: ${data.deletedBy}\n` +
+                  `Время: ${new Date().toLocaleString()}`,
+      vm_created: `${icons.info} <b>Создана новая VM</b>\n` +
+                  `ВМ: <code>${data.vmName}</code>\n` +
+                  `CPU: ${data.cpu}%\n` +
+                  `RAM: ${data.ram} MB\n` +
+                  `ROM: ${data.rom} GB\n` +
+                  `Пользователь: ${data.userEmail}\n` +
+                  `Время: ${new Date().toLocaleString()}`,
+
+      vm_updated: `${icons.info} <b>Обновлена VM</b>\n` +
+                  `ВМ: <code>${data.vmName}</code>\n` +
+                  `Статус: ${data.status}\n` +
+                  `Пользователь: ${data.userEmail}\n` +
+                  `Время: ${new Date().toLocaleString()}`,
+
+      vm_deleted: `${icons.critical} <b>Удалена VM</b>\n` +
+                  `ВМ: <code>${data.vmName}</code>\n` +
+                  `Пользователь: ${data.userEmail}\n` +
+                  `Время: ${new Date().toLocaleString()}`,
+          
+      vm_status: `${icons.info} <b>Статус ВМ изменен</b>\n` +
+                  `ВМ: <code>${data.vmName}</code>\n` +
+                  `Статус: ${data.oldStatus} → ${data.newStatus}\n` +
+                  `Пользователь: ${data.userEmail}\n` +
+                  `Время: ${new Date().toLocaleString()}`,
 
       cpu_alert: `${icons.warning} <b>Высокая загрузка CPU</b>\n` +
-                 `ВМ: <code>${data.vmName}</code>\n` +
-                 `CPU: ${data.cpuUsage}%\n` +
-                 `Порог: ${data.threshold}%\n` +
-                 `Время: ${new Date().toLocaleString()}`,
+                  `ВМ: <code>${data.vmName}</code>\n` +
+                  `CPU: ${data.cpuUsage}%\n` +
+                  `Порог: ${data.threshold}%\n` +
+                  `Время: ${new Date().toLocaleString()}`,
 
       host_down: `${icons.critical} <b>ESXi хост недоступен!</b>\n` +
-                 `Хост: <code>${data.hostName}</code>\n` +
-                 `IP: ${data.hostIp}\n` +
-                 `Статус: ${data.status}\n` +
-                 `Время: ${new Date().toLocaleString()}`
+                  `Хост: <code>${data.hostName}</code>\n` +
+                  `IP: ${data.hostIp}\n` +
+                  `Статус: ${data.status}\n` +
+                  `Время: ${new Date().toLocaleString()}`
     };
 
     return templates[type] || `${icon} ${data.message || JSON.stringify(data)}`;
@@ -87,7 +111,7 @@ class TelegramNotifier {
 
 const telegramNotifier = new TelegramNotifier();
 
-exports.sendNotification = async (req, res) => {
+/*exports.sendNotification = async (req, res) => {
   try {
     const { type, data, silent = false } = req.body;
     
@@ -97,28 +121,18 @@ exports.sendNotification = async (req, res) => {
     if (result.success) {
       res.json({ 
         success: true, 
-        message: 'Уведомление отправлено',
-        telegramMessageId: result.data?.result?.message_id 
+        message: 'Уведомление отправлено'
       });
     } else {
       res.status(500).json({ 
         success: false, 
-        error: 'Не удалось отправить уведомление',
-        details: result.error 
+        error: 'Не удалось отправить уведомление'
       });
     }
     
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
-
-exports.getStatus = (req, res) => {
-  res.json({
-    enabled: telegramNotifier.enabled,
-    service: 'telegram',
-    configured: !!telegramNotifier.botToken && !!telegramNotifier.chatId
-  });
-};
+};*/
 
 exports.telegramNotifier = telegramNotifier;

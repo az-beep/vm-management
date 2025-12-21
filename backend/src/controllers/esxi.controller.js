@@ -1,4 +1,5 @@
 const { EsxiHost, ActionLog } = require("../models");
+const { telegramNotifier } = require('./notification.controller');
 
 exports.addEsxi = async (req, res) => {
   try {
@@ -34,6 +35,22 @@ exports.getEsxiById = async (req, res) => {
     const esxi = await EsxiHost.findByPk(req.params.id);
     if (!esxi) {
       return res.status(404).json({ error: "ESXi хост не найден" });
+    }
+    const isConnected = await checkEsxiConnection(esxi.ip);
+    const newStatus = isConnected ? "connected" : "disconnected";
+    
+    if (esxi.status !== newStatus) {
+      await esxi.update({ status: newStatus });
+      
+      if (newStatus === "disconnected" && telegramNotifier.enabled) {
+        telegramNotifier.sendMessage(
+          telegramNotifier.formatAlert('host_down', {
+            hostName: esxi.name,
+            hostIp: esxi.ip,
+            status: newStatus
+          })
+        ).catch(err => {});
+      }
     }
     res.json(esxi);
   } catch (error) {

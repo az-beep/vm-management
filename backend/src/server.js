@@ -22,11 +22,10 @@ const createDefaultUsers = async () => {
           password: hashedPassword,
           role: userData.role
         });
-        console.log(`User created: ${userData.email}`);
       }
     }
   } catch (error) {
-    console.error("Error creating users:", error.message);
+    console.error("Ошибка создания пользователей:", error.message);
   }
 };
 
@@ -38,14 +37,13 @@ const startServer = async () => {
 
     app.listen(PORT, () => {
       console.log("=".repeat(50));
-      console.log(`Server running on port ${PORT}`);
       console.log(`API: http://localhost:${PORT}`);
       console.log(`Adminer: http://localhost:8080`);
       console.log("=".repeat(50));
     });
 
   } catch (err) {
-    console.error("Startup error:", err.message);
+    console.error("Ошибка запуска сервера:", err.message);
     process.exit(1);
   }
 };
