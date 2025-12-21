@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { User } = require("../models");
+const { User, ActionLog } = require("../models");
 const { telegramNotifier } = require('./notification.controller');
 
 exports.getAllUsers = async (req, res) => {
@@ -41,11 +41,11 @@ exports.createUser = async (req, res) => {
             ).catch(err => {});
         }
         
-        /*await ActionLog.create({
+        await ActionLog.create({
             userId: req.user.id,
             action: `Создание пользователя: ${email}`,
             details: `Роль: ${role}`
-        });*/
+        });
         
         res.status(201).json({
             id: user.id,
@@ -69,6 +69,8 @@ exports.deleteUser = async (req, res) => {
             return res.status(400).json({ error: "Нельзя удалить самого себя" });
         }
 
+        await user.destroy();
+
         if (telegramNotifier.enabled) {
             telegramNotifier.sendMessage(
                 telegramNotifier.formatAlert('user_deleted', {
@@ -79,12 +81,12 @@ exports.deleteUser = async (req, res) => {
             ).catch(err => {});
         }
         
-        /*await ActionLog.create({
+        await ActionLog.create({
             userId: req.user.id,
             action: `Удаление пользователя: ${user.email}`
-        });*/
+        });
         
-        await user.destroy();
+
         res.status(204).send();
     } catch (error) {
         res.status(500).json({ error: error.message });

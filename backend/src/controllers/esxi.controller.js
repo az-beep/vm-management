@@ -9,11 +9,12 @@ exports.addEsxi = async (req, res) => {
       ip,
       status: "connected",
     });
-    /*await ActionLog.create({
+    
+    await ActionLog.create({
       userId: req.user.id,
       action: "Добавление ESXi хоста",
       details: `Имя: ${name}, IP: ${ip}`
-    });*/
+    });
 
     res.json(esxi);
   } catch (error) {

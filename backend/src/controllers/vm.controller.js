@@ -47,12 +47,12 @@ exports.createVm = async (req, res) => {
     });
 
     // Логирование создания VM
-    /*await ActionLog.create({
+    await ActionLog.create({
       userId: req.user.id,
       vmId: vm.id,
       action: "Создание VM",
       details: `Имя: ${name}, CPU: ${cpu}%, RAM: ${ram} MB, ROM: ${rom} GB, ESXi: ${esxiHost.name}`
-    });*/
+    });
 
     // тг увед
     if (telegramNotifier.enabled) {
@@ -93,11 +93,11 @@ exports.updateVm = async (req, res) => {
       ).catch(err => {});
     }
 
-    /*await ActionLog.create({
+    await ActionLog.create({
       userId: req.user.id,
       vmId: vm.id,
       action: "Обновление VM",
-    });*/
+    });
     
     res.json(vm);
   } catch (error) {
@@ -123,11 +123,11 @@ exports.deleteVm = async (req, res) => {
       ).catch(err => {});
     }
 
-    /*await ActionLog.create({
+    await ActionLog.create({
       userId: req.user.id,
       action: "Удаление VM",
       details: `Имя: ${vmInfo.name}, CPU: ${vmInfo.cpu}%, RAM: ${vmInfo.ram} MB, ROM: ${vmInfo.rom} GB, Статус: ${vmInfo.status}`
-    });*/
+    });
 
     res.json({ message: "ВМ успешно удалена" });
   } catch (error) {
@@ -158,12 +158,12 @@ exports.startVm = async (req, res) => {
       ).catch(err => console.error('Ошибка уведомления:', err));
     }
 
-    /*await ActionLog.create({
+    await ActionLog.create({
       userId: req.user.id,
       vmId: vm.id,
       action: "Запуск VM",
       details: `ВМ: ${vm.name}, Статус: ${oldStatus} → running`
-    });*/
+    });
 
     res.json({ message: "ВМ запущена", vm });
   } catch (error) {
@@ -180,12 +180,12 @@ exports.stopVm = async (req, res) => {
     const oldStatus = vm.status;
     await vm.update({ status: "stopped" });
 
-    /*await ActionLog.create({
+    await ActionLog.create({
       userId: req.user.id,
       vmId: vm.id,
       action: "Остановка VM",
       details: `ВМ: ${vm.name}, Статус: ${oldStatus} → stopped`
-    });*/
+    });
 
     if (telegramNotifier.enabled) {
       telegramNotifier.sendMessage(
