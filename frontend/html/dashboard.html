@@ -37,9 +37,23 @@
     <main class="main-content">
         <div class="header">
             <h2>Дашборд мониторинга VM</h2>
+            <div class="header-controls">
+                <!-- Выпадающий список хостов -->
+                <div class="host-selector-container">
+                    <select class="host-selector" id="hostSelector">
+                        <option value="all">Все хосты</option>
+                        <!-- Динамически заполняется из JS -->
+                    </select>
+                    <div class="host-status" id="hostStatus">
+                        <span class="status-indicator status-disconnected"></span>
+                        <span class="status-text">Выберите хост</span>
+                    </div>
+                </div>
+                <!-- Кнопка создания VM -->
                 <button class="btn btn-primary" id="addVmBtn">
                     + Создать VM
                 </button>
+            </div>
         </div>
 
         <!-- Карточки статистики -->

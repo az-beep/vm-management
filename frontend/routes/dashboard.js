@@ -4,6 +4,8 @@ import { logout, getCurrentUser } from './auth.js';
 // Глобальные переменные
 let cpuChart, ramChart, romChart;
 let allVMs = [];
+let allESXiHosts = [];
+let selectedHostId = 'all';
 
 // Основная инициализация
 document.addEventListener('DOMContentLoaded', async () => {
@@ -44,6 +46,17 @@ function setupEventListeners() {
                 : await loadMetricsForVM(selectedVM);
         });
     }
+
+    // Обработчик выбора хоста
+    const hostSelector = document.getElementById('hostSelector');
+    if (hostSelector) {
+        hostSelector.addEventListener('change', async (e) => {
+            selectedHostId = e.target.value;
+            await updateHostStatus();
+            await loadVMsTable();
+            await loadDashboardStats();
+        });
+    }
 }
 
 // Настройка модальных окон
@@ -52,10 +65,22 @@ function setupModalWindows() {
     setupEditModal();
 }
 
+// Добавим функцию загрузки хостов
+async function loadESXiHosts() {
+    try {
+        allESXiHosts = await api.getESXiHosts();
+        updateHostSelector();
+        await updateHostStatus();
+    } catch (error) {
+        console.error('Ошибка загрузки ESXi хостов:', error);
+    }
+}
+
 // Инициализация данных
 async function loadInitialData() {
     try {
         await Promise.all([
+            loadESXiHosts(),
             loadDashboardStats(),
             loadVMsTable(),
             initChartsWithRealData()
@@ -160,6 +185,76 @@ function setupEditModal() {
 
 // ========== ОСНОВНЫЕ ФУНКЦИИ ==========
 
+// Обновим выпадающий список хостов
+function updateHostSelector() {
+    const hostSelector = document.getElementById('hostSelector');
+    if (!hostSelector) return;
+    
+    const currentValue = hostSelector.value;
+    hostSelector.innerHTML = '<option value="all">Все хосты</option>';
+    
+    allESXiHosts.forEach(host => {
+        const option = document.createElement('option');
+        option.value = host.id;
+        option.textContent = `${host.name} (${host.
+            ip})`;
+            hostSelector.appendChild(option);
+        });
+        
+        // Восстанавливаем выбранное значение
+        if (allESXiHosts.some(host => host.id.toString() === currentValue)) {
+            hostSelector.value = currentValue;
+        } else {
+            hostSelector.value = 'all';
+            selectedHostId = 'all';
+    }
+}
+
+// Обновим статус хоста
+async function updateHostStatus() {
+    const hostStatus = document.getElementById('hostStatus');
+    if (!hostStatus) return;
+    
+    if (selectedHostId === 'all') {
+        const connectedCount = allESXiHosts.filter(h => h.status === 'connected').length;
+        const totalCount = allESXiHosts.length;
+        
+        hostStatus.innerHTML = `
+            <span class="status-indicator ${totalCount > 0 ? 'status-connected' : 'status-unknown'}"></span>
+            <span class="status-text">${connectedCount}/${totalCount} подключено</span>
+        `;
+        return;
+    }
+    
+    const host = allESXiHosts.find(h => h.id.toString() === selectedHostId);
+    if (!host) {
+        hostStatus.innerHTML = `
+            <span class="status-indicator status-unknown"></span>
+            <span class="status-text">Хост не найден</span>
+        `;
+        return;
+    }
+    
+    try {
+        // Автоматическая проверка подключения при выборе хоста
+        const hostInfo = await api.getESXiById(host.id);
+        
+        const statusClass = hostInfo.status === 'connected' ? 'status-connected' : 'status-disconnected';
+        const statusText = hostInfo.status === 'connected' ? 'Подключен' : 'Не подключен';
+        
+        hostStatus.innerHTML = `
+            <span class="status-indicator ${statusClass}"></span>
+            <span class="status-text">${statusText}</span>
+        `;
+    } catch (error) {
+        console.error('Ошибка проверки статуса хоста:', error);
+        hostStatus.innerHTML = `
+            <span class="status-indicator status-unknown"></span>
+            <span class="status-text">Ошибка проверки</span>
+        `;
+    }
+}
+
 async function loadDashboardStats() {
     try {
         const [vms, metrics] = await Promise.all([
@@ -167,11 +262,19 @@ async function loadDashboardStats() {
             api.getLatestMetrics()
         ]);
 
+        let filteredVMs = vms;
+        if (selectedHostId !== 'all') {
+            filteredVMs = vms.filter(vm => 
+                vm.esxiHostId === parseInt(selectedHostId) || 
+                vm.EsxiHostId === parseInt(selectedHostId)
+            );
+        }
+
         const totalVMs = vms.length;
         const runningVMs = vms.filter(vm => vm.status === 'running').length;
         const avgCPU = calculateAverageCPU(metrics);
-        const totalRAM = vms.reduce((sum, vm) => sum + (vm.ram || 0), 0);
-
+        const totalRAM = filteredVMs.reduce((sum, vm) => sum + (vm.ram || 0), 0);
+        
         updateStatsUI(totalVMs, runningVMs, avgCPU, totalRAM);
         
     } catch (error) {
@@ -187,8 +290,20 @@ async function loadVMsTable() {
         ]);
 
         allVMs = vms;
-        updateVMSelector(vms);
-        renderVMsTable(vms, esxiHosts);
+        allESXiHosts = esxiHosts;
+
+        // Фильтрация VM по выбранному хосту
+        let filteredVMs = vms;
+        if (selectedHostId !== 'all') {
+            filteredVMs = vms.filter(vm => 
+                vm.esxiHostId === parseInt(selectedHostId) || 
+                vm.EsxiHostId === parseInt(selectedHostId)
+            );
+        }
+
+        updateHostSelector();
+        updateVMSelector(filteredVMs);
+        renderVMsTable(filteredVMs, esxiHosts);
         
     } catch (error) {
         console.error('Ошибка загрузки таблицы VM:', error);

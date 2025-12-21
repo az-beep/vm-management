@@ -33,16 +33,16 @@ exports.createVm = async (req, res) => {
     }
     
     // проверка существования хоста
-    const esxiHost = await EsxiHost.findByPk(esxiHostId);
-    if (!esxiHost) {
-      return res.status(404).json({ error: "ESXi хост не найден" });
-    }
+    //const esxiHost = await EsxiHost.findByPk(esxiHostId);
+    //if (!esxiHost) {
+    //  return res.status(404).json({ error: "ESXi хост не найден" });
+    //}
     const vm = await Vm.create({
       name,
       cpu,
       ram,
       rom,
-      esxiHostId,
+      //esxiHostId,
       status: "stopped",
     });
 
@@ -51,7 +51,7 @@ exports.createVm = async (req, res) => {
       userId: req.user.id,
       vmId: vm.id,
       action: "Создание VM",
-      details: `Имя: ${name}, CPU: ${cpu}%, RAM: ${ram} MB, ROM: ${rom} GB, ESXi: ${esxiHost.name}`
+      details: `Имя: ${name}, CPU: ${cpu}%, RAM: ${ram} MB, ROM: ${rom} GB`
     });
 
     // тг увед
@@ -138,7 +138,7 @@ exports.deleteVm = async (req, res) => {
 // Запуск/остановка VM (имитация)
 exports.startVm = async (req, res) => {
   try {
-    const vm = await Vm.findByPk(req.params.id, { include: [User] });
+    const vm = await Vm.findByPk(req.params.id);
     if (!vm) {
       return res.status(404).json({ error: "ВМ не найдена" });
     }

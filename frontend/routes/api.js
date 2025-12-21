@@ -62,6 +62,12 @@ class ApiService {
         });
     }
 
+    // В классе ApiService добавляем:
+    getESXiById(esxiId) {
+        return this.request(`/esxi/${esxiId}`);
+    }
+
+
     // VM
     getAllVMs() {
         return this.request('/vm');
