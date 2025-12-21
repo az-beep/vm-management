@@ -28,7 +28,7 @@ app.use("/notifications", authMiddleware, require("./routes/notification.routes"
 
 app.get("/", (req, res) => {
   res.json({
-    message: "✅ VM Management API",
+    message: "VM Management API",
     status: "running",
     version: "1.0.0",
     endpoints: [
@@ -46,7 +46,6 @@ app.get("/", (req, res) => {
       "POST /users", 
       "DELETE /users/:id",
       "POST /notifications/send",
-      "GET  /notifications/status"
     ]
   });
 });

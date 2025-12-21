@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { User } = require("../models");
-const { telegramNotifier } = require('./notification.controller'); // Добавьте эту строку
+const { User, ActionLog } = require("../models");
+const { telegramNotifier } = require('./notification.controller');
 
 exports.login = async (req, res) => {
   try {
@@ -10,27 +10,16 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ where: { email } });
     
     if (!user) {
-      console.log("User not found");
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Неверные учетные данные" });
     }
-    
-    console.log("User found, ID:", user.id);
-    console.log("Stored hash:", user.password.substring(0, 30) + "...");
     
     const cleanPassword = password.trim();
     const cleanHash = user.password.trim();
     
     const validPassword = await bcrypt.compare(cleanPassword, cleanHash);
     
-    console.log("Password comparison result:", validPassword);
-    
     if (!validPassword) {
-      console.log("Password mismatch");
-      
-      console.log("Input password:", cleanPassword);
-      console.log("Hash length:", cleanHash.length);
-      
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Неверные учетные данные" });
     }
     
     const token = jwt.sign(
@@ -39,9 +28,11 @@ exports.login = async (req, res) => {
       { expiresIn: "24h" }
     );
     
-    console.log("Login successful, token generated");
-    
-    // ДЛЯ TELEGRAM УВЕДОМЛЕНИЙ
+    await ActionLog.create({
+      userId: user.id,
+      action: "Вход в систему"
+    });
+
     if (telegramNotifier && telegramNotifier.enabled) {
       telegramNotifier.sendMessage(
         telegramNotifier.formatAlert('login', {
@@ -50,8 +41,8 @@ exports.login = async (req, res) => {
           ip: req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
           userAgent: req.headers['user-agent']
         }),
-        { silent: true } // Тихие уведомления для логинов
-      ).catch(err => console.error('Telegram notification error:', err));
+        { silent: true }
+      ).catch(err => console.error('Ошибка телеграм-уведомления:', err));
     }
     
     res.json({ 
@@ -64,7 +55,7 @@ exports.login = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Ошибка входа:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -73,17 +64,17 @@ exports.verify = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ error: "No token provided" });
+      return res.status(401).json({ error: "Токен не предоставлен" });
     }
 
     const decoded = jwt.verify(token, "secret");
     const user = await User.findByPk(decoded.id);
     if (!user) {
-      return res.status(401).json({ error: "User not found" });
+      return res.status(401).json({ error: "Пользователь не найден" });
     }
 
     res.json({ valid: true, user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) {
-    res.status(401).json({ error: "Invalid token" });
+    res.status(401).json({ error: "Неверный токен" });
   }
 };

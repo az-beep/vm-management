@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { User, ActionLog } = require("../models");
+const { User } = require("../models");
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -19,7 +19,7 @@ exports.createUser = async (req, res) => {
         
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(400).json({ error: "User already exists" });
+            return res.status(400).json({ error: "Пользователь уже существует" });
         }
         
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,11 +30,11 @@ exports.createUser = async (req, res) => {
             role
         });
 
-        await ActionLog.create({
+        /*await ActionLog.create({
             userId: req.user.id,
             action: `Создание пользователя: ${email}`,
             details: `Роль: ${role}`
-        });
+        });*/
         
         res.status(201).json({
             id: user.id,
@@ -51,66 +51,20 @@ exports.deleteUser = async (req, res) => {
     try {
         const user = await User.findByPk(req.params.id);
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            return res.status(404).json({ error: "Пользователь не найден" });
         }
         
-        // Нельзя удалить себя
         if (user.id === req.user.id) {
-            return res.status(400).json({ error: "Cannot delete yourself" });
+            return res.status(400).json({ error: "Нельзя удалить самого себя" });
         }
 
-        // Логируем удаление
-        await ActionLog.create({
+        /*await ActionLog.create({
             userId: req.user.id,
             action: `Удаление пользователя: ${user.email}`
-        });
+        });*/
         
         await user.destroy();
         res.status(204).send();
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.updateUser = async (req, res) => {
-    try {
-        const user = await User.findByPk(req.params.id);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-        
-        const { email, role } = req.body;
-        const updates = {};
-        
-        if (email) updates.email = email;
-        if (role) updates.role = role;
-        
-        await user.update(updates);
-
-        // Логируем обновление
-        await ActionLog.create({
-            userId: req.user.id,
-            action: `Обновление пользователя: ${user.email}`
-        });
-        
-        res.json({
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            updatedAt: user.updatedAt
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Дополнительно: получить текущего пользователя
-exports.getCurrentUser = async (req, res) => {
-    try {
-        const user = await User.findByPk(req.user.id, {
-            attributes: { exclude: ['password'] }
-        });
-        res.json(user);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

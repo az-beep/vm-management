@@ -8,15 +8,15 @@ const ActionLog = require("./ActionLog");
 
 // Связи
 EsxiHost.hasMany(Vm, { foreignKey: "esxiHostId" });
-Vm.belongsTo(EsxiHost, { foreignKey: "esxiHostId" });
 
+Vm.belongsTo(EsxiHost, { foreignKey: "esxiHostId" });
 Vm.hasMany(Metric, { foreignKey: "vmId" });
+
 Metric.belongsTo(Vm, { foreignKey: "vmId" });
 
 User.hasMany(ActionLog, { foreignKey: "userId" });
-ActionLog.belongsTo(User, { foreignKey: "userId" });
 
-// Если ActionLog связан с Vm
+ActionLog.belongsTo(User, { foreignKey: "userId" });
 ActionLog.belongsTo(Vm, { foreignKey: "vmId" });
 
 module.exports = {

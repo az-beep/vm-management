@@ -7,16 +7,16 @@ class TelegramNotifier {
     this.enabled = !!this.botToken && !!this.chatId;
     
     if (this.enabled) {
-      console.log('✅ Telegram notifications enabled');
+      console.log('Уведомления Telegram включены');
     } else {
-      console.log('⚠️  Telegram notifications disabled - set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID');
+      console.log('Уведомления Telegram отключены');
     }
   }
 
   async sendMessage(message, options = {}) {
     if (!this.enabled) {
-      console.log('Telegram notification (disabled):', message);
-      return { success: false, error: 'Telegram not configured' };
+      console.log('Уведомление Telegram (отключено):', message);
+      return { success: false, error: 'Telegram не настроен' };
     }
 
     try {
@@ -32,11 +32,11 @@ class TelegramNotifier {
 
       const response = await axios.post(url, payload);
       
-      console.log('📨 Telegram notification sent:', message.substring(0, 50) + '...');
+      console.log('Уведомление Telegram отправлено:', message.substring(0, 50) + '...');
       return { success: true, data: response.data };
       
     } catch (error) {
-      console.error('❌ Telegram send error:', error.message);
+      console.error('Ошибка отправки Telegram:', error.message);
       return { 
         success: false, 
         error: error.message,
@@ -56,36 +56,35 @@ class TelegramNotifier {
     const icon = icons[type] || '⚪';
     
     const templates = {
-      vm_status: `${icon} <b>VM Status Changed</b>\n` +
-                 `VM: <code>${data.vmName}</code>\n` +
-                 `Status: ${data.oldStatus} → ${data.newStatus}\n` +
-                 `User: ${data.userEmail}\n` +
-                 `Time: ${new Date().toLocaleString()}`,
+      login: `${icons.success} <b>Вход пользователя</b>\n` +
+             `Пользователь: ${data.email}\n` +
+             `Роль: ${data.role}\n` +
+             `IP: ${data.ip || 'Н/Д'}\n` +
+             `Время: ${new Date().toLocaleString()}`,
+      
+      vm_status: `${icons.info} <b>Статус ВМ изменен</b>\n` +
+                 `ВМ: <code>${data.vmName}</code>\n` +
+                 `Статус: ${data.oldStatus} → ${data.newStatus}\n` +
+                 `Пользователь: ${data.userEmail}\n` +
+                 `Время: ${new Date().toLocaleString()}`,
 
-      cpu_alert: `${icon} <b>High CPU Usage</b>\n` +
-                 `VM: <code>${data.vmName}</code>\n` +
+      cpu_alert: `${icons.warning} <b>Высокая загрузка CPU</b>\n` +
+                 `ВМ: <code>${data.vmName}</code>\n` +
                  `CPU: ${data.cpuUsage}%\n` +
-                 `Threshold: ${data.threshold}%\n` +
-                 `Time: ${new Date().toLocaleString()}`,
+                 `Порог: ${data.threshold}%\n` +
+                 `Время: ${new Date().toLocaleString()}`,
 
-      login: `${icon} <b>User Login</b>\n` +
-             `User: ${data.email}\n` +
-             `Role: ${data.role}\n` +
-             `IP: ${data.ip || 'N/A'}\n` +
-             `Time: ${new Date().toLocaleString()}`,
-
-      host_down: `🔴 <b>ESXi Host Down!</b>\n` +
-                 `Host: <code>${data.hostName}</code>\n` +
+      host_down: `${icons.critical} <b>ESXi хост недоступен!</b>\n` +
+                 `Хост: <code>${data.hostName}</code>\n` +
                  `IP: ${data.hostIp}\n` +
-                 `Status: ${data.status}\n` +
-                 `Time: ${new Date().toLocaleString()}`
+                 `Статус: ${data.status}\n` +
+                 `Время: ${new Date().toLocaleString()}`
     };
 
-    return templates[data.template] || `${icon} ${data.message}`;
+    return templates[type] || `${icon} ${data.message || JSON.stringify(data)}`;
   }
 }
 
-// Создаем экземпляр
 const telegramNotifier = new TelegramNotifier();
 
 exports.sendNotification = async (req, res) => {
@@ -98,13 +97,13 @@ exports.sendNotification = async (req, res) => {
     if (result.success) {
       res.json({ 
         success: true, 
-        message: 'Notification sent',
+        message: 'Уведомление отправлено',
         telegramMessageId: result.data?.result?.message_id 
       });
     } else {
       res.status(500).json({ 
         success: false, 
-        error: 'Failed to send notification',
+        error: 'Не удалось отправить уведомление',
         details: result.error 
       });
     }
@@ -122,5 +121,4 @@ exports.getStatus = (req, res) => {
   });
 };
 
-// Экспортируем для использования в других контроллерах
 exports.telegramNotifier = telegramNotifier;
