@@ -140,13 +140,6 @@ class ApiService {
         return this.request('/logs');
     }
 
-    createAuditLog(logData) {
-        return this.request('/logs', {
-            method: 'POST',
-            body: JSON.stringify(logData),
-        });
-    }
-
     // Users
     getAllUsers() {
         return this.request('/users');

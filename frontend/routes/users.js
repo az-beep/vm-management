@@ -139,12 +139,6 @@ function setupModal() {
         try {
             await api.createUser({ email, password, role });
             
-            // Логируем действие
-            await api.createAuditLog({
-                userId: getCurrentUser().id,
-                action: `Создание пользователя: ${email}`
-            });
-            
             modal.style.display = 'none';
             form.reset();
             await loadUsers();
@@ -177,12 +171,6 @@ window.deleteUser = async function(userId) {
 
     try {
         await api.deleteUser(userId);
-        
-        // Логируем действие
-        await api.createAuditLog({
-            userId: getCurrentUser().id,
-            action: `Удаление пользователя: ${userToDelete.email}`
-        });
         
         await loadUsers();
         showSuccess('Пользователь успешно удален');

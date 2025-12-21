@@ -37,7 +37,9 @@
     <main class="main-content">
         <div class="header">
             <h2>Дашборд мониторинга VM</h2>
-            <div class="status">🔵 Загрузка данных...</div>
+                <button class="btn btn-primary" id="addVmBtn">
+                    + Создать VM
+                </button>
         </div>
 
         <!-- Карточки статистики -->
@@ -111,8 +113,6 @@
                             <th>CPU</th>
                             <th>RAM</th>
                             <th>ROM</th>
-                            <th>ESXi Хост</th>
-                            <th>IP Адрес</th>
                             <th>Действия</th>
                         </tr>
                     </thead>
@@ -128,6 +128,91 @@
             </div>
         </div>
     </main>
+
+    <!-- Модальное окно создания VM -->
+    <div id="addVmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Создать виртуальную машину</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="addVmForm">
+                <div class="form-group">
+                    <label>Имя VM:</label>
+                    <input type="text" class="form-control" id="vmName" 
+                           placeholder="Web Server" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>CPU (ядра):</label>
+                        <input type="number" class="form-control" id="vmCpu" 
+                               min="1" max="32" value="2" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>RAM (GB):</label>
+                        <input type="number" class="form-control" id="vmRam" 
+                               min="1" max="256" value="4" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>ROM (GB):</label>
+                        <input type="number" class="form-control" id="vmRom" 
+                               min="10" max="4096" value="50" required>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Создать VM</button>
+                    <button type="button" class="btn btn-secondary modal-close">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editVmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Изменение конфигурации VM</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="editVmForm">
+                <input type="hidden" id="editVmId">
+                
+                <div class="form-group">
+                    <label>Имя VM:</label>
+                    <input type="text" class="form-control" id="editVmName" 
+                           placeholder="Web Server" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>CPU (ядра):</label>
+                        <input type="number" class="form-control" id="editVmCpu" 
+                               min="1" max="32" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>RAM (GB):</label>
+                        <input type="number" class="form-control" id="editVmRam" 
+                               min="1" max="256" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>ROM (GB):</label>
+                        <input type="number" class="form-control" id="editVmRom" 
+                               min="10" max="4096" required>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    <button type="button" class="btn btn-secondary modal-close">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Скрипты -->
     <script type="module" src="../routes/dashboard.js"></script>
