@@ -1,26 +1,5 @@
-const { EsxiHost, ActionLog } = require("../models");
+const { EsxiHost } = require("../models");
 const { telegramNotifier } = require('./notification.controller');
-
-exports.addEsxi = async (req, res) => {
-  try {
-    const { name, ip } = req.body;
-    const esxi = await EsxiHost.create({
-      name,
-      ip,
-      status: "connected",
-    });
-    
-    await ActionLog.create({
-      userId: req.user.id,
-      action: "Добавление ESXi хоста",
-      details: `Имя: ${name}, IP: ${ip}`
-    });
-
-    res.json(esxi);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 exports.getAllEsxi = async (req, res) => {
   try {

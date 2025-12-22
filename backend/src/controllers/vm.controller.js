@@ -26,13 +26,11 @@ exports.createVm = async (req, res) => {
   try {
     const { name, cpu, ram, rom, esxiHostId } = req.body;
 
-    // проверка существования вм с таким именем
     const existingVm = await Vm.findOne({ where: { name } });
     if (existingVm) {
       return res.status(400).json({ error: "VM с таким именем уже существует" });
     }
     
-    // проверка существования хоста
     //const esxiHost = await EsxiHost.findByPk(esxiHostId);
     //if (!esxiHost) {
     //  return res.status(404).json({ error: "ESXi хост не найден" });
@@ -46,7 +44,6 @@ exports.createVm = async (req, res) => {
       status: "stopped",
     });
 
-    // Логирование создания VM
     await ActionLog.create({
       userId: req.user.id,
       vmId: vm.id,
@@ -82,6 +79,12 @@ exports.updateVm = async (req, res) => {
     const { name, cpu, ram, rom, status, esxiHostId } = req.body;
     await vm.update({ name, cpu, ram, rom, status, esxiHostId });
 
+    await ActionLog.create({
+      userId: req.user.id,
+      vmId: vm.id,
+      action: "Обновление VM",
+    });
+
     // тг увед
     if (telegramNotifier.enabled) {
       telegramNotifier.sendMessage(
@@ -92,12 +95,6 @@ exports.updateVm = async (req, res) => {
         })
       ).catch(err => {});
     }
-
-    await ActionLog.create({
-      userId: req.user.id,
-      vmId: vm.id,
-      action: "Обновление VM",
-    });
     
     res.json(vm);
   } catch (error) {
@@ -111,7 +108,21 @@ exports.deleteVm = async (req, res) => {
     if (!vm) {
       return res.status(404).json({ error: "ВМ не найдена" });
     }
+    const vmInfo = {
+      name: vm.name,
+      cpu: vm.cpu,
+      ram: vm.ram,
+      rom: vm.rom,
+      status: vm.status
+    };
+
     await vm.destroy();
+
+    await ActionLog.create({
+      userId: req.user.id,
+      action: "Удаление VM",
+      details: `Имя: ${vmInfo.name}, CPU: ${vmInfo.cpu}%, RAM: ${vmInfo.ram} MB, ROM: ${vmInfo.rom} GB, Статус: ${vmInfo.status}`
+    });
 
     // тг увед
     if (telegramNotifier.enabled) {
@@ -122,12 +133,6 @@ exports.deleteVm = async (req, res) => {
         })
       ).catch(err => {});
     }
-
-    await ActionLog.create({
-      userId: req.user.id,
-      action: "Удаление VM",
-      details: `Имя: ${vmInfo.name}, CPU: ${vmInfo.cpu}%, RAM: ${vmInfo.ram} MB, ROM: ${vmInfo.rom} GB, Статус: ${vmInfo.status}`
-    });
 
     res.json({ message: "ВМ успешно удалена" });
   } catch (error) {
@@ -146,6 +151,13 @@ exports.startVm = async (req, res) => {
     const oldStatus = vm.status;
     await vm.update({ status: "running" });
 
+    await ActionLog.create({
+      userId: req.user.id,
+      vmId: vm.id,
+      action: "Запуск VM",
+      details: `ВМ: ${vm.name}, Статус: ${oldStatus} → running`
+    });
+
     // тг увед
     if (telegramNotifier.enabled) {
       telegramNotifier.sendMessage(
@@ -157,13 +169,6 @@ exports.startVm = async (req, res) => {
         })
       ).catch(err => console.error('Ошибка уведомления:', err));
     }
-
-    await ActionLog.create({
-      userId: req.user.id,
-      vmId: vm.id,
-      action: "Запуск VM",
-      details: `ВМ: ${vm.name}, Статус: ${oldStatus} → running`
-    });
 
     res.json({ message: "ВМ запущена", vm });
   } catch (error) {
