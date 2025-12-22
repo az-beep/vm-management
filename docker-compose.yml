@@ -32,7 +32,6 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
-    #  - /app/node_modules
     ports:
       - "5000:5000"
     environment:
@@ -58,11 +57,11 @@ services:
     build: ./frontend
     container_name: vm-frontend
     ports:
-      - "443:443"  # HTTPS
-      - "80:80"    # HTTP редирект
+      - "443:443"
+      - "80:80"
     volumes:
       - ./frontend:/usr/share/nginx/html
-      - ./nginx-ssl:/etc/nginx/ssl  # ← ВАЖНО! Монтируем сертификаты
+      - ./nginx-ssl:/etc/nginx/ssl  # ВАЖНО Монтируем сертификаты
     depends_on:
       backend:
         condition: service_healthy

@@ -1,19 +1,5 @@
 const { ActionLog, User, Vm } = require("../models");
 
-exports.createLog = async (req, res) => {
-  try {
-    const { userId, vmId, action, details } = req.body;
-    
-    const log = await ActionLog.create({
-      userId, vmId, action, details, ip: req.ip, timestamp: new Date()
-    });
-    
-    res.status(201).json(log);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 exports.getAllLogs = async (req, res) => {
   try {
     const logs = await ActionLog.findAll({

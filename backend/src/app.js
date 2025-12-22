@@ -41,7 +41,6 @@ app.get("/", (req, res) => {
       "POST /auth/login",
       "GET  /auth/verify",
       "GET  /esxi",
-      "POST /esxi/add",
       "GET  /vm",
       "POST /vm",
       "GET  /metrics",

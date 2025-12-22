@@ -92,12 +92,6 @@ class TelegramNotifier {
                   `Пользователь: ${data.userEmail}\n` +
                   `Время: ${new Date().toLocaleString()}`,
 
-      cpu_alert: `${icons.warning} <b>Высокая загрузка CPU</b>\n` +
-                  `ВМ: <code>${data.vmName}</code>\n` +
-                  `CPU: ${data.cpuUsage}%\n` +
-                  `Порог: ${data.threshold}%\n` +
-                  `Время: ${new Date().toLocaleString()}`,
-
       host_down: `${icons.critical} <b>ESXi хост недоступен!</b>\n` +
                   `Хост: <code>${data.hostName}</code>\n` +
                   `IP: ${data.hostIp}\n` +
@@ -110,29 +104,5 @@ class TelegramNotifier {
 }
 
 const telegramNotifier = new TelegramNotifier();
-
-/*exports.sendNotification = async (req, res) => {
-  try {
-    const { type, data, silent = false } = req.body;
-    
-    const message = telegramNotifier.formatAlert(type, data);
-    const result = await telegramNotifier.sendMessage(message, { silent });
-    
-    if (result.success) {
-      res.json({ 
-        success: true, 
-        message: 'Уведомление отправлено'
-      });
-    } else {
-      res.status(500).json({ 
-        success: false, 
-        error: 'Не удалось отправить уведомление'
-      });
-    }
-    
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};*/
 
 exports.telegramNotifier = telegramNotifier;
