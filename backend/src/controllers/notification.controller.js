@@ -50,11 +50,6 @@ class TelegramNotifier {
              `Роль: ${data.role}\n` +
              `IP: ${data.ip || 'Н/Д'}\n` +
              `Время: ${new Date().toLocaleString()}`,
-      vm_status: `${icons.info} <b>Статус ВМ изменен</b>\n` +
-                  `ВМ: <code>${data.vmName}</code>\n` +
-                  `Статус: ${data.oldStatus} → ${data.newStatus}\n` +
-                  `Пользователь: ${data.userEmail}\n` +
-                  `Время: ${new Date().toLocaleString()}`,
 
       user_created: `${icons.success} <b>Создан новый пользователь</b>\n` +
                   `Пользователь: ${data.email}\n` +
@@ -91,12 +86,6 @@ class TelegramNotifier {
                   `Статус: ${data.oldStatus} → ${data.newStatus}\n` +
                   `Пользователь: ${data.userEmail}\n` +
                   `Время: ${new Date().toLocaleString()}`,
-
-      host_down: `${icons.critical} <b>ESXi хост недоступен!</b>\n` +
-                  `Хост: <code>${data.hostName}</code>\n` +
-                  `IP: ${data.hostIp}\n` +
-                  `Статус: ${data.status}\n` +
-                  `Время: ${new Date().toLocaleString()}`
     };
 
     return templates[type] || `${icon} ${data.message || JSON.stringify(data)}`;
