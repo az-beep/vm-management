@@ -164,36 +164,77 @@ body {
     border-bottom: 2px solid #001A41;
 }
 
-/* фильтры */
+/*фильтроы */
 .filters {
     display: flex;
-    gap: 15px;
-    align-items: end;
-    margin-bottom: 20px;
     flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 }
 
 .filter-group {
     display: flex;
     flex-direction: column;
+    min-width: 150px;
 }
 
 .filter-group label {
-    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 600;
     color: #4a5568;
-    font-size: 14px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
 }
 
-.form-control {
-    padding: 10px;
-    border: 2px solid #e2e8f0;
-    border-radius: 6px;
+.filter-group .form-control {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
     font-size: 14px;
+    transition: border-color 0.2s;
 }
 
-.form-control:focus {
+.filter-group .form-control:focus {
     outline: none;
-    border-color: #3182ce;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-actions .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.filter-actions .btn-secondary {
+    background-color: #4299e1;
+    color: white;
+    border: none;
+}
+
+.filter-actions .btn-secondary:hover {
+    background-color: #3182ce;
+}
+
+.filter-actions .btn {
+    background-color: #e2e8f0;
+    color: #4a5568;
+    border: none;
+}
+
+.filter-actions .btn:hover {
+    background-color: #cbd5e0;
 }
 
 /* стили таблицы */
@@ -272,5 +313,21 @@ body {
     .filters {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .filter-actions {
+        justify-content: flex-start;
+        width: 100%;
     }
 }

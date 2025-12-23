@@ -653,7 +653,7 @@ function showNotification(message, bgColor, textColor, borderColor) {
     setTimeout(() => div.remove(), 5000);
 }
 
-//функции
+//функции`
 window.startVM = async function(vmId) {
     try {
         await api.startVM(vmId);

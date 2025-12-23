@@ -37,6 +37,30 @@
         <div class="card">
             <h3 class="card-title">События системы</h3>
             <div class="filters">
+                <!-- Фильтр по событиям -->
+                <div class="filter-group">
+                    <label for="eventFilter">Событие:</label>
+                    <select class="form-control" id="eventFilter">
+                        <option value="">Все события</option>
+                        <option value="Вход">Вход в систему</option>
+                        <option value="Создание">Создание VM</option>
+                        <option value="Обновление">Обновление VM</option>
+                        <option value="Удаление">Удаление VM</option>
+                        <option value="Запуск">Запуск VM</option>
+                        <option value="Остановка">Остановка VM</option>
+                        <option value="Создание пользователя">Создание пользователя</option>
+                        <option value="Удаление пользователя">Удаление пользователя</option>
+                    </select>
+                </div>
+            
+                <!-- Поиск по сырым данным -->
+                <div class="filter-group">
+                    <label for="searchInput">Поиск:</label>
+                    <input type="text" class="form-control" id="searchInput" 
+                           placeholder="Поиск по пользователю, VM, действию...">
+                </div>
+            
+                <!-- Фильтр по дате (оставляем существующий) -->
                 <div class="filter-group">
                     <label for="dateFrom">С:</label>
                     <input type="date" id="dateFrom" class="form-control">
@@ -45,8 +69,12 @@
                     <label for="dateTo">По:</label>
                     <input type="date" id="dateTo" class="form-control">
                 </div>
-                <button class="btn btn-secondary" id="applyFilter">Применить</button>
-                <button class="btn" id="resetFilter">Сбросить</button>
+            
+                <!-- Общие кнопки для всех фильтров -->
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" id="applyAllFilters">Применить все</button>
+                    <button class="btn" id="resetAllFilters">Сбросить все</button>
+                </div>
             </div>
 
             <div class="table-container">
