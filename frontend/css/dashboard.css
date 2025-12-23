@@ -120,7 +120,6 @@ body {
     font-weight: 600;
 }
 
-/* Кнопки */
 .btn {
     padding: 10px 20px;
     border: none;
@@ -139,7 +138,7 @@ body {
     background: #014ca8;
 }
 
-/* Стили для контейнера управления хостами */
+/* хосты */
 .header-controls {
     display: flex;
     align-items: center;
@@ -207,8 +206,6 @@ body {
     font-weight: 500;
 }
 
-
-
 /* Карточки статистики */
 .card {
     background: white;
@@ -227,7 +224,7 @@ body {
     border-bottom: 2px solid #001A41;
 }
 
-/* Статистика в ряд */
+/* карточки статистики */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -313,7 +310,6 @@ body {
     font-size: 11px;
 }
 
-/* Селектор VM */
 .vm-selector {
     width: 180px;
     padding: 8px;
@@ -360,7 +356,7 @@ body {
     background: #f7fafc;
 }
 
-/* Статусы */
+/* цвета статусов */
 .status-badge {
     padding: 4px 10px;
     border-radius: 20px;
@@ -378,7 +374,7 @@ body {
     color: #c53030;
 }
 
-/* Кнопки действий в таблице */
+/*Кнопки действий в таблице*/
 .actions {
     display: flex;
     gap: 5px;
@@ -411,18 +407,17 @@ body {
     background-color: #dd6b20;
 }
 
-/* Стили для селектора VM */
+
 #vmSelector {
     margin-bottom: 15px;
 }
 
-/* Стили для состояния загрузки */
 .loading {
     opacity: 0.7;
     pointer-events: none;
 }
 
-/* Модальное окно */
+/*модальное окно */
 .modal {
     display: none;
     position: fixed;
@@ -469,7 +464,7 @@ body {
     color: #4a5568;
 }
 
-/* Формы */
+/* формы модального окна */
 .form-group {
     margin-bottom: 20px;
 }
@@ -535,7 +530,7 @@ body {
     background: #cbd5e0;
 }
 
-/* Стили для кнопки редактирования */
+/* кнопки редактирования */
 .btn-edit {
     background: #4299e1;
     color: white;
@@ -545,7 +540,6 @@ body {
     background: #3182ce;
 }
 
-/* Улучшаем отображение кнопок действий */
 .actions {
     display: flex;
     gap: 5px;
@@ -563,8 +557,7 @@ body {
     text-align: center;
 }
 
-/* === Дополнительные стили для таблицы VM === */
-
+/* стили для таблицы VM*/
 .status-badge {
     display: inline-block;
     padding: 6px 12px;
@@ -616,7 +609,6 @@ body {
     opacity: 0.9;
 }
 
-/* Адаптивность для мобильных */
 @media (max-width: 768px) {
     .form-row {
         grid-template-columns: 1fr;
@@ -632,7 +624,6 @@ body {
     }
 }
 
-/* Адаптивность */
 @media (max-width: 1024px) {
     .charts-grid {
         grid-template-columns: repeat(2, 1fr);

@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('token', response.token);
                     localStorage.setItem('user', JSON.stringify(response.user));
                     
-                    // Перенаправляем на дашборд
                     window.location.href = '../html/dashboard.html';
                 }
             } catch (error) {
@@ -32,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Проверка авторизации на защищенных страницах
     const protectedPages = ['dashboard.html', 'table.html', 'users.html'];
     const currentPage = window.location.pathname.split('/').pop();
     
@@ -44,14 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Функция выхода
 export function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '../index.html';
 }
 
-// Функция получения текущего пользователя
 export function getCurrentUser() {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;

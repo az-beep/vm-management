@@ -42,7 +42,6 @@ class ApiService {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // Для DELETE запросов может не быть тела
             if (response.status === 204) {
                 return { success: true };
             }
@@ -54,7 +53,6 @@ class ApiService {
         }
     }
 
-    // Auth
     login(email, password) {
         return this.request('/auth/login', {
             method: 'POST',
@@ -62,13 +60,13 @@ class ApiService {
         });
     }
 
-    // В классе ApiService добавляем:
+    // Хосты
     getESXiById(esxiId) {
         return this.request(`/esxi/${esxiId}`);
     }
 
 
-    // VM
+    // ВМ
     getAllVMs() {
         return this.request('/vm');
     }
@@ -109,7 +107,7 @@ class ApiService {
         });
     }
 
-    // Metrics
+    // метрики
     getVMMetrics(vmId) {
         return this.request(`/metrics/vm/${vmId}`);
     }
@@ -125,7 +123,7 @@ class ApiService {
         });
     }
 
-    // ESXi Hosts
+    //Хосты
     getESXiHosts() {
         return this.request('/esxi');
     }
@@ -141,12 +139,12 @@ class ApiService {
         });
     }
 
-    // Audit Logs
+    // Логирование
     getAuditLogs() {
         return this.request('/logs');
     }
 
-    // Users
+    // юзеры
     getAllUsers() {
         return this.request('/users');
     }

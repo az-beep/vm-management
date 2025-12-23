@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Боковое меню -->
     <aside class="sidebar">
         <div class="logo">
             <h1>VM Monitor</h1>
@@ -16,15 +15,12 @@
         </div>
         <nav class="menu">
             <a href="dashboard.html" class="menu-item active">
-                <span class="menu-icon">📊</span>
                 <span>Дашборд</span>
             </a>
             <a href="table.html" class="menu-item">
-                <span class="menu-icon">📋</span>
                 <span>Аудит</span>
             </a>
             <a href="users.html" class="menu-item">
-                <span class="menu-icon">👥</span>
                 <span>Пользователи</span>
             </a>
         </nav>
@@ -33,30 +29,26 @@
         </a>
     </aside>
 
-    <!-- Основной контент -->
     <main class="main-content">
         <div class="header">
             <h2>Дашборд мониторинга VM</h2>
             <div class="header-controls">
-                <!-- Выпадающий список хостов -->
                 <div class="host-selector-container">
                     <select class="host-selector" id="hostSelector">
                         <option value="all">Все хосты</option>
-                        <!-- Динамически заполняется из JS -->
+
                     </select>
                     <div class="host-status" id="hostStatus">
                         <span class="status-indicator status-disconnected"></span>
                         <span class="status-text">Выберите хост</span>
                     </div>
                 </div>
-                <!-- Кнопка создания VM -->
                 <button class="btn btn-primary" id="addVmBtn">
                     + Создать VM
                 </button>
             </div>
         </div>
 
-        <!-- Карточки статистики -->
         <div class="card">
             <h3 class="card-title">Общая статистика</h3>
             <div class="stats-row">
@@ -79,16 +71,13 @@
             </div>
         </div>
 
-        <!-- Графики -->
         <div class="card">
             <h3 class="card-title">Метрики производительности</h3>
-            <!-- Селектор VM -->
             <select class="vm-selector" id="vmSelector">
                 <option>Все VM</option>
-                <!-- Динамически заполняется из JS -->
+
             </select>
             <div class="charts-grid">
-                <!-- График CPU -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <div class="chart-title">VM CPU Использование</div>
@@ -96,7 +85,6 @@
                     </div>
                     <canvas id="cpuChart"></canvas>
                 </div>
-                <!-- График RAM -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <div class="chart-title">VM RAM Использование</div>
@@ -104,7 +92,6 @@
                     </div>
                     <canvas id="ramChart"></canvas>
                 </div>
-                <!-- График ROM -->
                 <div class="chart-container">
                     <div class="chart-header">
                         <div class="chart-title">VM ROM Использование</div>
@@ -115,7 +102,6 @@
             </div>
         </div>
 
-        <!-- Таблица VM -->
         <div class="card">
             <h3 class="card-title">Виртуальные машины</h3>
             <div class="table-container">
@@ -131,7 +117,6 @@
                         </tr>
                     </thead>
                     <tbody id="vmTableBody">
-                        <!-- Данные загружаются динамически -->
                         <tr>
                             <td colspan="8" style="text-align: center; padding: 30px; color: #718096;">
                                 Загрузка данных...
@@ -228,7 +213,6 @@
         </div>
     </div>
 
-    <!-- Скрипты -->
     <script type="module" src="../routes/dashboard.js"></script>
 </body>
 </html>

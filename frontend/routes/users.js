@@ -4,14 +4,12 @@ import { logout, getCurrentUser } from './auth.js';
 let allUsers = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Проверка авторизации
     const user = getCurrentUser();
     if (!user) {
         window.location.href = '../index.html';
         return;
     }
 
-    // Настройка выхода
     const logoutBtn = document.querySelector('.logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
@@ -20,10 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Загрузка пользователей
     await loadUsers();
-
-    // Настройка модального окна
     setupModal();
 });
 
@@ -58,22 +53,17 @@ function updateUsersTable() {
     allUsers.forEach(user => {
         const row = document.createElement('tr');
         
-        // Бэйджи ролей
         let roleBadge = '';
         let roleClass = '';
         
         if (user.role === 'admin') {
             roleClass = 'role-admin';
             roleBadge = 'Администратор';
-        } else if (user.role === 'viewer') {
+        } else {
             roleClass = 'role-viewer';
             roleBadge = 'Наблюдатель';
-        } else {
-            roleClass = 'role-user';
-            roleBadge = 'Пользователь';
         }
         
-        // Не показываем кнопку удаления для текущего пользователя
         const canDelete = user.id !== currentUser.id;
         
 row.innerHTML = `
@@ -93,6 +83,7 @@ row.innerHTML = `
     });
 }
 
+//модальное окно
 function setupModal() {
     const modal = document.getElementById('addUserModal');
     const addBtn = document.querySelector('.btn-primary');
@@ -100,12 +91,11 @@ function setupModal() {
     const cancelBtn = modal.querySelector('.btn[style*="e2e8f0"]');
     const form = modal.querySelector('form');
 
-    // Открытие модального окна
+
     addBtn.addEventListener('click', () => {
         modal.style.display = 'flex';
     });
 
-    // Закрытие модального окна
     [closeBtn, cancelBtn].forEach(btn => {
         if (btn) {
             btn.addEventListener('click', () => {
@@ -115,7 +105,6 @@ function setupModal() {
         }
     });
 
-    // Закрытие по клику вне окна
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.style.display = 'none';
@@ -123,7 +112,6 @@ function setupModal() {
         }
     });
 
-    // Обработка формы
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -150,7 +138,6 @@ function setupModal() {
         }
     });
 
-    // Заполняем селект ролями
     const roleSelect = form.querySelector('select');
     if (roleSelect) {
         roleSelect.innerHTML = `
@@ -160,7 +147,6 @@ function setupModal() {
     }
 }
 
-// Глобальные функции
 window.deleteUser = async function(userId) {
     const userToDelete = allUsers.find(u => u.id === userId);
     if (!userToDelete) return;

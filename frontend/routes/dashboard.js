@@ -1,15 +1,12 @@
 import api from './api.js';
 import { logout, getCurrentUser } from './auth.js';
 
-// Глобальные переменные
 let cpuChart, ramChart, romChart;
 let allVMs = [];
 let allESXiHosts = [];
 let selectedHostId = 'all';
 
-// Основная инициализация
 document.addEventListener('DOMContentLoaded', async () => {
-    // Проверка авторизации
     if (!getCurrentUser()) {
         window.location.href = '../index.html';
         return;
@@ -17,17 +14,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     setupEventListeners();
     setupModalWindows();
-    
-    // Первоначальная загрузка
     await loadInitialData();
-    
-    // Автообновление
     startAutoRefresh();
 });
 
-// Настройка обработчиков событий
 function setupEventListeners() {
-    // Выход
     const logoutBtn = document.querySelector('.logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
@@ -36,7 +27,6 @@ function setupEventListeners() {
         });
     }
 
-    // Фильтр графиков по VM
     const vmSelector = document.querySelector('.vm-selector');
     if (vmSelector) {
         vmSelector.addEventListener('change', async (e) => {
@@ -47,7 +37,6 @@ function setupEventListeners() {
         });
     }
 
-    // Обработчик выбора хоста
     const hostSelector = document.getElementById('hostSelector');
     if (hostSelector) {
         hostSelector.addEventListener('change', async (e) => {
@@ -59,13 +48,11 @@ function setupEventListeners() {
     }
 }
 
-// Настройка модальных окон
 function setupModalWindows() {
     setupVMModal();
     setupEditModal();
 }
 
-// Добавим функцию загрузки хостов
 async function loadESXiHosts() {
     try {
         allESXiHosts = await api.getESXiHosts();
@@ -76,7 +63,6 @@ async function loadESXiHosts() {
     }
 }
 
-// Инициализация данных
 async function loadInitialData() {
     try {
         await Promise.all([
@@ -91,7 +77,6 @@ async function loadInitialData() {
     }
 }
 
-// Автообновление
 function startAutoRefresh() {
     setInterval(async () => {
         try {
@@ -106,8 +91,7 @@ function startAutoRefresh() {
     }, 10000);
 }
 
-// ========== МОДАЛЬНЫЕ ОКНА ==========
-
+//модальные окна
 function setupVMModal() {
     const modal = document.getElementById('addVmModal');
     const addBtn = document.getElementById('addVmBtn');
@@ -115,13 +99,9 @@ function setupVMModal() {
 
     if (!modal || !addBtn || !form) return;
 
-    // Открытие
     addBtn.addEventListener('click', () => modal.style.display = 'flex');
-
-    // Закрытие
     setupModalCloseHandlers(modal, form);
 
-    // Отправка формы
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -147,16 +127,14 @@ function setupVMModal() {
     });
 }
 
+//изменение конфигурации ВМ
 function setupEditModal() {
     const modal = document.getElementById('editVmModal');
     const form = document.getElementById('editVmForm');
 
     if (!modal || !form) return;
 
-    // Закрытие
     setupModalCloseHandlers(modal, form);
-
-    // Отправка формы
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -183,9 +161,7 @@ function setupEditModal() {
     });
 }
 
-// ========== ОСНОВНЫЕ ФУНКЦИИ ==========
-
-// Обновим выпадающий список хостов
+// основые функции
 function updateHostSelector() {
     const hostSelector = document.getElementById('hostSelector');
     if (!hostSelector) return;
@@ -201,7 +177,6 @@ function updateHostSelector() {
             hostSelector.appendChild(option);
         });
         
-        // Восстанавливаем выбранное значение
         if (allESXiHosts.some(host => host.id.toString() === currentValue)) {
             hostSelector.value = currentValue;
         } else {
@@ -210,7 +185,6 @@ function updateHostSelector() {
     }
 }
 
-// Обновим статус хоста
 async function updateHostStatus() {
     const hostStatus = document.getElementById('hostStatus');
     if (!hostStatus) return;
@@ -236,7 +210,6 @@ async function updateHostStatus() {
     }
     
     try {
-        // Автоматическая проверка подключения при выборе хоста
         const hostInfo = await api.getESXiById(host.id);
         
         const statusClass = hostInfo.status === 'connected' ? 'status-connected' : 'status-disconnected';
@@ -292,7 +265,6 @@ async function loadVMsTable() {
         allVMs = vms;
         allESXiHosts = esxiHosts;
 
-        // Фильтрация VM по выбранному хосту
         let filteredVMs = vms;
         if (selectedHostId !== 'all') {
             filteredVMs = vms.filter(vm => 
@@ -367,8 +339,6 @@ async function loadMetricsForVM(vmName) {
     }
 }
 
-// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
-
 function calculateAverageCPU(metrics) {
     let totalCPU = 0;
     let cpuCount = 0;
@@ -402,7 +372,7 @@ function updateStatsUI(totalVMs, runningVMs, avgCPU, totalRAM) {
         { element: '.stat-box:nth-child(1) .stat-value', value: totalVMs },
         { element: '.stat-box:nth-child(2) .stat-value', value: runningVMs },
         { element: '.stat-box:nth-child(3) .stat-value', value: `${avgCPU}%` },
-        { element: '.stat-box:nth-child(4) .stat-value', value: `${(totalRAM / 1024).toFixed(1)} GB` }
+        { element: '.stat-box:nth-child(4) .stat-value', value: `${totalRAM} GB` }
     ];
     
     stats.forEach(stat => {
@@ -449,7 +419,7 @@ function createVMRow(vm, esxiHost) {
         <td><strong>${vm.name}</strong></td>
         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
         <td>${vm.cpu || 0}%</td>
-        <td>${vm.ram ? (vm.ram / 1024).toFixed(1) + ' GB' : '0 GB'}</td>
+        <td>${vm.ram ? vm.ram + ' GB' : '0 GB'}</td>
         <td>${vm.rom ? vm.rom + ' GB' : '0 GB'}</td>
         <td class="actions">
             <button class="btn-small btn-edit" onclick="openEditVM(${vm.id})" 
@@ -503,8 +473,7 @@ function updateVMSelector(vms) {
     }
 }
 
-// ========== ГРАФИКИ ==========
-
+//Графики
 function createCharts(labels, cpuData, ramData, romData) {
     const chartConfig = {
         type: 'line',
@@ -547,12 +516,10 @@ function createCharts(labels, cpuData, ramData, romData) {
         const ctx = document.getElementById(chart.id)?.getContext('2d');
         if (!ctx) return;
 
-        // Уничтожаем старый график
         if (chart.id === 'cpuChart' && cpuChart) cpuChart.destroy();
         if (chart.id === 'ramChart' && ramChart) ramChart.destroy();
         if (chart.id === 'romChart' && romChart) romChart.destroy();
 
-        // Создаем новый
         const newChart = new Chart(ctx, {
             ...chartConfig,
             data: {
@@ -570,7 +537,6 @@ function createCharts(labels, cpuData, ramData, romData) {
             }
         });
 
-        // Сохраняем ссылку
         if (chart.id === 'cpuChart') cpuChart = newChart;
         if (chart.id === 'ramChart') ramChart = newChart;
         if (chart.id === 'romChart') romChart = newChart;
@@ -593,8 +559,7 @@ function createEmptyCharts() {
     createCharts(labels, emptyData, emptyData, emptyData);
 }
 
-// ========== УТИЛИТЫ ==========
-
+// валидация
 function getFormData(form, fieldNames) {
     const data = {};
     fieldNames.forEach(name => {
@@ -607,14 +572,12 @@ function getFormData(form, fieldNames) {
 function validateVMForm(data, isEdit = false) {
     const errors = [];
     
-    // Проверка обязательных полей
     Object.entries(data).forEach(([key, value]) => {
         if (!value && value !== 0) {
             errors.push(`Поле ${key} обязательно для заполнения`);
         }
     });
 
-    // Проверка диапазонов
     if (data.vmCpu || data.editVmCpu) {
         const cpu = data.vmCpu || data.editVmCpu;
         if (cpu < 1 || cpu > 32) errors.push('CPU должно быть от 1 до 32 ядер');
@@ -660,8 +623,7 @@ function handleApiError(context, error) {
     showError(`Ошибка при ${context}: ${error.message || 'Неизвестная ошибка'}`);
 }
 
-// ========== УВЕДОМЛЕНИЯ ==========
-
+//Уведомления
 function showError(message) {
     showNotification(message, '#fed7d7', '#c53030', '#f56565');
 }
@@ -691,8 +653,7 @@ function showNotification(message, bgColor, textColor, borderColor) {
     setTimeout(() => div.remove(), 5000);
 }
 
-// ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ==========
-
+//функции
 window.startVM = async function(vmId) {
     try {
         await api.startVM(vmId);

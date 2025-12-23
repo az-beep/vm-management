@@ -12,7 +12,7 @@ body {
     min-height: 100vh;
 }
 
-/* Боковое меню */
+/*боковое меню */
 .sidebar {
     width: 250px;
     background-color: #001A41;
@@ -120,7 +120,6 @@ body {
     font-weight: 600;
 }
 
-/* Кнопки */
 .btn {
     padding: 10px 20px;
     border: none;
@@ -150,7 +149,6 @@ body {
     background: #c53030;
 }
 
-/* Карточки */
 .card {
     background: white;
     border-radius: 12px;
@@ -168,7 +166,7 @@ body {
     border-bottom: 2px solid #001A41;
 }
 
-/* Таблица пользователей */
+/* таблица */
 .table-container {
     overflow-x: auto;
     border-radius: 8px;
@@ -200,7 +198,6 @@ body {
     background: #f7fafc;
 }
 
-/* Стили для бэйджа ролей */
 .role-badge {
     padding: 4px 12px;
     border-radius: 20px;
@@ -270,7 +267,6 @@ body {
     color: #4a5568;
 }
 
-/* Формы */
 .form-group {
     margin-bottom: 20px;
 }
@@ -301,7 +297,6 @@ body {
     margin-top: 25px;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .sidebar {
         width: 70px;

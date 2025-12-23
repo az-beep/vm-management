@@ -61,7 +61,7 @@ services:
       - "80:80"
     volumes:
       - ./frontend:/usr/share/nginx/html
-      - ./nginx-ssl:/etc/nginx/ssl  # ВАЖНО Монтируем сертификаты
+      - ./nginx-ssl:/etc/nginx/ssl  
     depends_on:
       backend:
         condition: service_healthy

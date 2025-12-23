@@ -9,7 +9,6 @@ body {
     background-color: #f5f7fa;
 }
 
-/* Страница входа */
 .login-page {
     height: 100vh;
     display: flex;
@@ -47,7 +46,6 @@ body {
     font-size: 14px;
 }
 
-/* Форма */
 .input-group {
     margin-bottom: 20px;
 }
@@ -72,7 +70,6 @@ body {
     border-color: #3182ce;
 }
 
-/* Кнопка */
 .login-btn {
     width: 100%;
     padding: 14px;
@@ -90,7 +87,7 @@ body {
     background-color: #014ca8;
 }
 
-/* Сообщения об ошибках */
+/* соо об ошибках */
 .error-message {
     background: #fed7d7;
     color: #c53030;
@@ -101,7 +98,6 @@ body {
     display: none;
 }
 
-/* Адаптивность */
 @media (max-width: 480px) {
     .login-container {
         padding: 15px;

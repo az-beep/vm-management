@@ -6,13 +6,11 @@ const itemsPerPage = 10;
 let allLogs = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Проверка авторизации
     if (!localStorage.getItem('token')) {
         window.location.href = '../index.html';
         return;
     }
 
-    // Настройка выхода
     const logoutBtn = document.querySelector('.logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
@@ -21,13 +19,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Загрузка логов
     await loadAuditLogs();
-
-    // Настройка фильтров
     setupFilters();
 
-    // Кнопка обновления
     const refreshBtn = document.querySelector('.btn-primary');
     if (refreshBtn) {
         refreshBtn.addEventListener('click', async () => {
@@ -63,7 +57,7 @@ function updateAuditTable() {
         return;
     }
 
-    // Пагинация
+    // пагинация страниц таблицы
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pageLogs = allLogs.slice(startIndex, endIndex);
@@ -71,7 +65,6 @@ function updateAuditTable() {
     pageLogs.forEach((log, index) => {
         const row = document.createElement('tr');
         
-        // Определяем цвет действия
         let actionColor = '#718096';
         if (log.action.includes('Вход') || log.action.includes('login')) actionColor = '#3182ce';
         if (log.action.includes('Создан') || log.action.includes('create')) actionColor = '#48bb78';
@@ -97,10 +90,11 @@ function updateAuditTable() {
     });
 }
 
+
+//Определние действий пользователя
 function getActionDetails(log) {
     if (log.details) return log.details;
     
-    // Генерация деталей на основе действия
     if (log.action.includes('Вход')) return 'Успешная аутентификация';
     if (log.action.includes('Создан')) return 'Создана новая запись';
     if (log.action.includes('Изменен')) return 'Конфигурация изменена';
@@ -118,7 +112,6 @@ function updatePagination() {
         pageInfo.textContent = `Страница ${currentPage} из ${totalPages}`;
     }
 
-    // Кнопки
     const prevBtn = document.querySelector('.pagination-btn:first-child');
     const nextBtn = document.querySelector('.pagination-btn:last-child');
     
