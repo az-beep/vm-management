@@ -2,8 +2,8 @@ const axios = require('axios');
 
 class TelegramNotifier {
   constructor() {
-    this.botToken = '8359101654:AAG95K8Mbi_BmCAn4R5WOe37KijuUXSJMi4';
-    this.chatId = '977325615';
+    this.botToken = '';
+    this.chatId = '';
     this.enabled = !!this.botToken && !!this.chatId;
   }
 
